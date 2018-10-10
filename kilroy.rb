@@ -2,9 +2,17 @@ require 'discordrb'
 require 'json'
 
 info = JSON.parse(File.read('info.json'))
+commands = JSON.parse(File.read('commands.json'))
 
 bot = Discordrb::Commands::CommandBot.new(token: info['token'], client_id: info['client_id'], prefix: '$')
 songs = Dir["songs/*.mp3"]
+
+bot.command(:help) do |event|
+  event.respond "Kilroy commands:"
+  commands.each do |key, value|
+    event.respond "\t- #{key}: #{value}"
+  end
+end
 
 bot.command(:who_are_you?) do |event|
   event.respond "I'm Kilroy!"
