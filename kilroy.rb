@@ -1,10 +1,10 @@
 require 'discordrb'
 require 'json'
 
-info = JSON.parse(File.read('info.json'))
-commands = JSON.parse(File.read('commands.json'))
+keys = JSON.parse(File.read('data/keys.json'))
+commands = JSON.parse(File.read('data/commands.json'))
 
-bot = Discordrb::Commands::CommandBot.new(token: info['token'], client_id: info['client_id'], prefix: '$')
+bot = Discordrb::Commands::CommandBot.new(token: keys['token'], client_id: keys['client_id'], prefix: '$')
 songs = Dir["songs/*.mp3"]
 
 bot.command(:help) do |event|
