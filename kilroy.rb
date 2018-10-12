@@ -7,6 +7,8 @@ commands = JSON.parse(File.read('data/commands.json'))
 bot = Discordrb::Commands::CommandBot.new(token: keys['token'], client_id: keys['client_id'], prefix: '$')
 songs = Dir["songs/*.mp3"]
 
+bot.bucket :radio, time_span: 120
+
 bot.command(:help) do |event|
   event.respond "Kilroy commands:"
   commands.each do |key, value|
@@ -18,7 +20,7 @@ bot.command(:who_are_you?) do |event|
   event.respond "I'm Kilroy!"
 end
 
-bot.command(:play_song) do |event|
+bot.command(:play_song, bucket: :radio) do |event|
    channel = event.user.voice_channel
    unless channel
       event.respond "No way fuckboy." 
