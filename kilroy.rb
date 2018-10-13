@@ -4,7 +4,12 @@ require 'json'
 keys = JSON.parse(File.read('data/keys.json'))
 commands = JSON.parse(File.read('data/commands.json'))
 
-bot = Discordrb::Commands::CommandBot.new(token: keys['token'], client_id: keys['client_id'], prefix: '$')
+bot = Discordrb::Commands::CommandBot.new(
+  token: keys['token'],
+  client_id: keys['client_id'],
+  prefix: '$',
+  command_doesnt_exist_message: '"%command%" is not a valid command'
+)
 songs = Dir["songs/*.mp3"]
 
 bot.bucket :radio, limit: 1, time_span: 120
