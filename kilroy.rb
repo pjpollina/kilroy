@@ -7,7 +7,7 @@ commands = JSON.parse(File.read('data/commands.json'))
 bot = Discordrb::Commands::CommandBot.new(token: keys['token'], client_id: keys['client_id'], prefix: '$')
 songs = Dir["songs/*.mp3"]
 
-bot.bucket :radio, time_span: 120
+bot.bucket :radio, limit: 1, time_span: 120
 
 bot.command(:help) do |event|
   event.respond "Kilroy commands:"
