@@ -5,9 +5,9 @@ REG_RUN  = /\A[1-9]\.[0-9], [0-9]{1,2}m\z/
 REG_HILL = /\A[1-9]\.[0-9], [0-9]{1,2}m, [1-9]\.[0-9]%\z/
 
 dbclient = Mysql2::Client.new(
-  username: 'root',
-  password: ENV['mysql_root_password'],
-  database: 'testing'
+  username: 'kilroy',
+  password: ENV['discord_bot_token'],
+  database: 'fitness'
 )
 insert_run  = dbclient.prepare('INSERT INTO cardio(cd_date, cd_mph, cd_minutes) VALUES(CURDATE(), ?, ?)')
 insert_hill = dbclient.prepare('INSERT INTO cardio(cd_date, cd_mph, cd_minutes, cd_incline) VALUES(CURDATE(), ?, ?, ?)')
