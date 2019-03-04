@@ -11,6 +11,7 @@ dbclient = Mysql2::Client.new(
 )
 insert_run  = dbclient.prepare('INSERT INTO cardio(cd_date, cd_mph, cd_minutes) VALUES(CURDATE(), ?, ?)')
 insert_hill = dbclient.prepare('INSERT INTO cardio(cd_date, cd_mph, cd_minutes, cd_incline) VALUES(CURDATE(), ?, ?, ?)')
+insert_weigh_in = dbclient.prepare('INSERT INTO weigh_ins(wi_date, wi_lbs) VALUES(CURDATE(), ?')
 
 kilroy = Discordrb::Bot.new(
   token:      ENV['discord_bot_token'],
@@ -29,6 +30,15 @@ kilroy.message(in: '#cardio') do |event|
     puts "Hill:\t#{event.content}"
   else
     event.respond("Unrecognized cardio format")
+  end
+end
+
+kilroy.message(in: '#weigh-ins') do |event|
+  weight = event.content.chomp('lbs').to_f
+  if(weight != 0.0)
+    insert_weigh_in.execute(weight)
+  else
+    event.respond("Improper weight format")
   end
 end
 
