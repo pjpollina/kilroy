@@ -11,7 +11,7 @@ dbclient = Mysql2::Client.new(
 )
 insert_run  = dbclient.prepare('INSERT INTO cardio(cd_date, cd_mph, cd_minutes) VALUES(CURDATE(), ?, ?)')
 insert_hill = dbclient.prepare('INSERT INTO cardio(cd_date, cd_mph, cd_minutes, cd_incline) VALUES(CURDATE(), ?, ?, ?)')
-insert_weigh_in = dbclient.prepare('INSERT INTO weigh_ins(wi_date, wi_lbs) VALUES(CURDATE(), ?')
+insert_weigh_in = dbclient.prepare('INSERT INTO weigh_ins(wi_date, wi_lbs) VALUES(CURDATE(), ?)')
 
 kilroy = Discordrb::Bot.new(
   token:      ENV['discord_bot_token'],
