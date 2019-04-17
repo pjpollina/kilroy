@@ -12,6 +12,7 @@ dbclient = Mysql2::Client.new(
 insert_run  = dbclient.prepare('INSERT INTO cardio(cd_date, cd_mph, cd_minutes) VALUES(CURDATE(), ?, ?)')
 insert_hill = dbclient.prepare('INSERT INTO cardio(cd_date, cd_mph, cd_minutes, cd_incline) VALUES(CURDATE(), ?, ?, ?)')
 insert_weigh_in = dbclient.prepare('INSERT INTO weigh_ins(wi_date, wi_lbs) VALUES(CURDATE(), ?)')
+select_month_totals = dbclient.prepare('SELECT cd_mph, SUM(cd_minutes) AS minutes, SUM(cd_distance) AS distance FROM cardio WHERE MONTH(cd_date)=? GROUP BY cd_mph')
 
 kilroy = Discordrb::Bot.new(
   token:      ENV['discord_bot_token'],
