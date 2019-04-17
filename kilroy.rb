@@ -43,4 +43,16 @@ kilroy.message(in: '#weigh-ins') do |event|
   end
 end
 
+kilroy.message(in: '#status') do |event|
+  case event.content
+  when '~totals month'
+    response = "Month totals:"
+    select_month_totals.execute(Time.now.month, symbolize_keys: true).each do |total|
+      response << "#{total[:cd_mph]}\t#{total[:minutes]}\t#{total[:distance]}"
+    end
+    puts response
+    event.respond(response)
+  end
+end
+
 kilroy.run
