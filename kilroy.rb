@@ -24,7 +24,11 @@ kilroy.message(in: '#cardio') do |event|
   case event.content
   when REG_RUN
     mph, minutes = event.content.split(', ')
-    insert_run.execute(mph.to_f, minutes.chomp(?m).to_i)
+    mysql.connect do |client|
+      stmt = client.prepare('INSERT INTO cardio(cd_date, cd_mph, cd_minutes) VALUES(CURDATE(), ?, ?)')
+      stmt.execute(mph.to_f, minutes.chomp(?m).to_i)
+      stmt.close
+    end
     puts "Run:\t#{event.content}"
   when REG_HILL
     mph, minutes, incline = event.content.split(', ')
