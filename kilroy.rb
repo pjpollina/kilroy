@@ -46,7 +46,11 @@ end
 kilroy.message(in: '#weigh-ins') do |event|
   weight = event.content.chomp('lbs').to_f
   if(weight != 0.0)
-    insert_weigh_in.execute(weight)
+    mysql.connect do |client|
+      stmt = client.prepare('INSERT INTO weigh_ins(wi_date, wi_lbs) VALUES(CURDATE(), ?)')
+      stmt.execute(weight)
+      stmt.close
+    end
   else
     event.respond("Improper weight format")
   end
