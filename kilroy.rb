@@ -32,7 +32,11 @@ kilroy.message(in: '#cardio') do |event|
     puts "Run:\t#{event.content}"
   when REG_HILL
     mph, minutes, incline = event.content.split(', ')
-    insert_hill.execute(mph.to_f, minutes.chomp(?m).to_i, incline.chomp('%').to_f)
+    mysql.connect do |client|
+      stmt = client.prepare('INSERT INTO cardio(cd_date, cd_mph, cd_minutes, cd_incline) VALUES(CURDATE(), ?, ?, ?)')
+      stmt.execute(mph.to_f, minutes.chomp(?m).to_i, incline.chomp('%').to_f)
+      stmt.close
+    end
     puts "Hill:\t#{event.content}"
   else
     event.respond("Unrecognized cardio format")
