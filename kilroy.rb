@@ -1,9 +1,10 @@
 require 'discordrb'
-require 'mysql2'
+require './mysql'
 
 REG_RUN  = /\A[1-9]\.[0-9], [0-9]{1,2}m\z/
 REG_HILL = /\A[1-9]\.[0-9], [0-9]{1,2}m, [1-9]\.[0-9]%\z/
 
+mysql = MySQL.new('kilroy', ENV['discord_bot_token'], 'fitness')
 dbclient = Mysql2::Client.new(
   username: 'kilroy',
   password: ENV['discord_bot_token'],
