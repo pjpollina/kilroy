@@ -56,12 +56,10 @@ end
 kilroy.message(in: '#status') do |event|
   case event.content
   when '~totals month'
-    response = "Month totals:"
+    event.respond("Month totals:")
     select_month_totals.execute(Time.now.month, symbolize_keys: true).each do |total|
-      response << "#{total[:cd_mph]}\t#{total[:minutes]}\t#{total[:distance]}"
+      event.respond("#{total[:cd_mph]}\t#{total[:minutes].to_i}\t#{total[:distance].round(3)}")
     end
-    puts response
-    event.respond(response)
   end
 end
 
