@@ -10,7 +10,6 @@ dbclient = Mysql2::Client.new(
   password: ENV['discord_bot_token'],
   database: 'fitness'
 )
-select_month_totals = dbclient.prepare('SELECT cd_mph, SUM(cd_minutes) AS minutes, SUM(cd_distance) AS distance FROM cardio WHERE MONTH(cd_date)=? GROUP BY cd_mph')
 
 kilroy = Discordrb::Bot.new(
   token:      ENV['discord_bot_token'],
