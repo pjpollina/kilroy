@@ -60,7 +60,7 @@ kilroy.message(in: '#status') do |event|
     mysql.connect do |client|
       stmt = client.prepare('SELECT cd_mph, SUM(cd_minutes) AS minutes, SUM(cd_distance) AS distance FROM cardio WHERE MONTH(cd_date)=? GROUP BY cd_mph')
       stmt.execute(Time.now.month, symbolize_keys: true).each do |total|
-        message << "#{total[:cd_mph]}\t#{total[:minutes].to_i.to_s.rjust(4)}\t#{("%.3f" % total[:distance].round(3)).rjust(6)}\r\n"
+        message << "#{total[:cd_mph]}\t#{total[:minutes].to_i.to_s.rjust(4)}\t#{("%.3f" % total[:distance].round(3)).rjust(7)}\r\n"
       end
       event.respond(message + "```")
       stmt.close
@@ -70,7 +70,7 @@ kilroy.message(in: '#status') do |event|
     mysql.connect do |client|
       stmt = client.prepare('SELECT cd_mph, SUM(cd_minutes) AS minutes, SUM(cd_distance) AS distance FROM cardio WHERE YEAR(cd_date)=? GROUP BY cd_mph')
       stmt.execute(Time.now.year, symbolize_keys: true).each do |total|
-        message << "#{total[:cd_mph]}\t#{total[:minutes].to_i.to_s.rjust(4)}\t#{("%.3f" % total[:distance].round(3)).rjust(6)}\r\n"
+        message << "#{total[:cd_mph]}\t#{total[:minutes].to_i.to_s.rjust(4)}\t#{("%.3f" % total[:distance].round(3)).rjust(7)}\r\n"
       end
       event.respond(message + "```")
       stmt.close
