@@ -56,12 +56,13 @@ end
 kilroy.message(in: '#status') do |event|
   case event.content
   when '~totals month'
-    event.respond("Month totals:")
+    message = "Month totals:\r\n"
     mysql.connect do |client|
       stmt = client.prepare('SELECT cd_mph, SUM(cd_minutes) AS minutes, SUM(cd_distance) AS distance FROM cardio WHERE MONTH(cd_date)=? GROUP BY cd_mph')
       stmt.execute(Time.now.month, symbolize_keys: true).each do |total|
-        event.respond("#{total[:cd_mph]}\t#{total[:minutes].to_i}\t#{total[:distance].round(3)}")
+        message << "#{total[:cd_mph]}\t#{total[:minutes].to_i}\t#{total[:distance].round(3)}\r\n"
       end
+      event.respond(message)
       stmt.close
     end
   end
