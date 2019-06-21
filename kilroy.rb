@@ -65,6 +65,17 @@ kilroy.message(in: '#status') do |event|
       event.respond(message + "```")
       stmt.close
     end
+  when '~totals semester'
+    message = "```Semester totals:\r\n"
+    mysql.connect do |client|
+      stmt = client.prepare('SELECT cd_mph, SUM(cd_minutes) AS minutes, SUM(cd_distance) AS distance FROM cardio WHERE MONTH(cd_date) BETWEEN ? AND ? GROUP BY cd_mph')
+      first, last = (Time.now.month.between?(1, 6)) ? [1, 6] : [7, 12]
+      stmt.execute(first, last, symbolize_keys: true).each do |total|
+        message << "#{total[:cd_mph]}\t#{total[:minutes].to_i.to_s.rjust(4)}\t#{("%.3f" % total[:distance].round(3)).rjust(7)}\r\n"
+      end
+      event.respond(message + "```")
+      stmt.close
+    end
   when '~totals year'
     message = "```Year totals:\r\n"
     mysql.connect do |client|
