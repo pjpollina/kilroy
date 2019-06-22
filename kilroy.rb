@@ -88,6 +88,7 @@ kilroy.message(in: '#status') do |event|
       stmt.close
     end
   end
+  puts "Command issued: #{event.content}"
 end
 
 kilroy.run
