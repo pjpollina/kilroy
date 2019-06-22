@@ -48,6 +48,7 @@ kilroy.message(in: '#weigh-ins') do |event|
       stmt.execute(weight)
       stmt.close
     end
+    puts "Weigh-in:\t#{event.content}"
   else
     event.respond("Improper weight format")
   end
