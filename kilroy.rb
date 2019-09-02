@@ -55,12 +55,13 @@ kilroy.message(in: '#weigh-ins') do |event|
 end
 
 kilroy.message(in: '#status') do |event|
+  totals_sql = 'SELECT cd_mph, SUM(cd_minutes) AS minutes, SUM(cd_distance) AS distance FROM cardio WHERE '
   case event.content
   when '~totals month'
     message = "```Month totals:\r\n"
     mysql.connect do |client|
       all = Hash.new(0)
-      stmt = client.prepare('SELECT cd_mph, SUM(cd_minutes) AS minutes, SUM(cd_distance) AS distance FROM cardio WHERE MONTH(cd_date)=? GROUP BY cd_mph')
+      stmt = client.prepare(totals_sql + 'MONTH(cd_date)=? GROUP BY cd_mph')
       stmt.execute(Time.now.month, symbolize_keys: true).each do |total|
         message << "#{total[:cd_mph]}\t#{total[:minutes].to_i.to_s.rjust(4)}\t#{("%.3f" % total[:distance].round(3)).rjust(7)}\r\n"
         total.keys.each do |key|
@@ -75,7 +76,7 @@ kilroy.message(in: '#status') do |event|
     message = "```Semester totals:\r\n"
     mysql.connect do |client|
       all = Hash.new(0)
-      stmt = client.prepare('SELECT cd_mph, SUM(cd_minutes) AS minutes, SUM(cd_distance) AS distance FROM cardio WHERE MONTH(cd_date) BETWEEN ? AND ? GROUP BY cd_mph')
+      stmt = client.prepare(totals_sql + 'MONTH(cd_date) BETWEEN ? AND ? GROUP BY cd_mph')
       first, last = (Time.now.month.between?(1, 6)) ? [1, 6] : [7, 12]
       stmt.execute(first, last, symbolize_keys: true).each do |total|
         message << "#{total[:cd_mph]}\t#{total[:minutes].to_i.to_s.rjust(4)}\t#{("%.3f" % total[:distance].round(3)).rjust(7)}\r\n"
@@ -91,7 +92,7 @@ kilroy.message(in: '#status') do |event|
     message = "```Year totals:\r\n"
     mysql.connect do |client|
       all = Hash.new(0)
-      stmt = client.prepare('SELECT cd_mph, SUM(cd_minutes) AS minutes, SUM(cd_distance) AS distance FROM cardio WHERE YEAR(cd_date)=? GROUP BY cd_mph')
+      stmt = client.prepare(totals_sql + 'YEAR(cd_date)=? GROUP BY cd_mph')
       stmt.execute(Time.now.year, symbolize_keys: true).each do |total|
         message << "#{total[:cd_mph]}\t#{total[:minutes].to_i.to_s.rjust(4)}\t#{("%.3f" % total[:distance].round(3)).rjust(7)}\r\n"
         total.keys.each do |key|
