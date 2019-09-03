@@ -56,6 +56,7 @@ end
 
 kilroy.message(in: '#status') do |event|
   totals_sql = 'SELECT cd_mph, SUM(cd_minutes) AS minutes, SUM(cd_distance) AS distance FROM cardio WHERE '
+  hills_sql  = 'SELECT cd_incline, SUM(cd_minutes) AS minutes, SUM(cd_distance) AS distance FROM cardio WHERE cd_incline > 0.0 AND '
   case event.content
   when '~totals month'
     message = "```Month totals:\r\n"
@@ -102,6 +103,15 @@ kilroy.message(in: '#status') do |event|
       message << "ALL\t#{all[:minutes].to_i.to_s.rjust(4)}\t#{("%.3f" % all[:distance].round(3)).rjust(7)}\r\n"
       event.respond(message + "```")
       stmt.close
+    end
+  when '~hills month'
+    message = "```Month hills:\r\n"
+    mysql.connect do |client|
+      stmt = client.prepare(hills_sql + 'MONTH(cd_date)=? GROUP BY cd_incline')
+      stmt.execute(Time.now.month, symbolize_keys: true).each do |total|
+        message << "#{total[:cd_incline].to_s.rjust(4)}\t#{total[:minutes].to_i.to_s.rjust(4)}\t#{("%.3f" % total[:distance].round(3)).rjust(7)}\r\n"
+      end
+      event.respond(message + "```")
     end
   end
   puts "Command issued: #{event.content}"
