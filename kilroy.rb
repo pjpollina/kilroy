@@ -123,6 +123,15 @@ kilroy.message(in: '#status') do |event|
       end
       event.respond(message + "```")
     end
+  when '~hills year'
+    message = "```Year hills:\r\n"
+    mysql.connect do |client|
+      stmt = client.prepare(hills_sql + 'YEAR(cd_date)=? GROUP BY cd_incline')
+      stmt.execute(Time.now.year, symbolize_keys: true).each do |total|
+        message << "#{total[:cd_incline].to_s.rjust(4)}\t#{total[:minutes].to_i.to_s.rjust(4)}\t#{("%.3f" % total[:distance].round(3)).rjust(7)}\r\n"
+      end
+      event.respond(message + "```")
+    end
   end
   puts "Command issued: #{event.content}"
 end
