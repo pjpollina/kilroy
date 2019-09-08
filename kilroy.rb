@@ -95,7 +95,7 @@ kilroy.message(in: '#status') do |event|
       all = Hash.new(0)
       stmt = client.prepare(totals_sql + 'YEAR(cd_date)=? GROUP BY cd_mph')
       stmt.execute(Time.now.year, symbolize_keys: true).each do |total|
-        message << "#{total[:cd_mph]}\t#{total[:minutes].to_i.to_s.rjust(4)}\t#{("%.3f" % total[:distance].round(3)).rjust(7)}\r\n"
+        message << "#{total[:cd_mph]}\t#{total[:minutes].to_i.to_s.rjust(5)}\t#{("%.3f" % total[:distance].round(3)).rjust(7)}\r\n"
         total.keys.each do |key|
           all[key] += total[key]
         end
