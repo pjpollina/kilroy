@@ -87,33 +87,25 @@ kilroy.message(in: '#status') do |event|
     else
       event.respond('Missing or unrecognized qualifier for command "totals"')
     end
-  when '~hills month'
-    message = "```Month hills:\r\n"
-    mysql.connect do |client|
-      stmt = client.prepare(hills_sql + span_constraints['month'] + ' GROUP BY cd_incline')
-      stmt.execute(Time.now.month, symbolize_keys: true).each do |total|
-        message << "#{total[:cd_incline].to_s.rjust(4)}\t#{total[:minutes].to_i.to_s.rjust(4)}\t#{("%.3f" % total[:distance].round(3)).rjust(7)}\r\n"
+  when /\A~hills (.*)/
+    command = event.content.split(' ')
+    if(command.count > 1 && ['month', 'year', 'semester'].include?(command[1]))
+      args = []
+      case command[1]
+        when 'month'    then args = [Time.now.month]
+        when 'semester' then args = (Time.now.month.between?(1, 6)) ? [1, 6] : [7, 12]
+        when 'year'     then args = [Time.now.year]
       end
-      event.respond(message + "```")
-    end
-  when '~hills semester'
-    message = "```Semester hills:\r\n"
-    mysql.connect do |client|
-      stmt = client.prepare(hills_sql + span_constraints['semester'] + ' GROUP BY cd_incline')
-      first, last = (Time.now.month.between?(1, 6)) ? [1, 6] : [7, 12]
-      stmt.execute(first, last, symbolize_keys: true).each do |total|
-        message << "#{total[:cd_incline].to_s.rjust(4)}\t#{total[:minutes].to_i.to_s.rjust(4)}\t#{("%.3f" % total[:distance].round(3)).rjust(7)}\r\n"
+      message = "```#{command[1].capitalize} hills:\r\n"
+      mysql.connect do |client|
+        stmt = client.prepare("#{hills_sql} #{span_constraints[command[1]]} GROUP BY cd_incline")
+        stmt.execute(*args, symbolize_keys: true).each do |total|
+          message << "#{total[:cd_incline].to_s.rjust(4)}\t#{total[:minutes].to_i.to_s.rjust(4)}\t#{("%.3f" % total[:distance].round(3)).rjust(7)}\r\n"
+        end
+        event.respond(message + "```")
       end
-      event.respond(message + "```")
-    end
-  when '~hills year'
-    message = "```Year hills:\r\n"
-    mysql.connect do |client|
-      stmt = client.prepare(hills_sql + span_constraints['year'] + ' GROUP BY cd_incline')
-      stmt.execute(Time.now.year, symbolize_keys: true).each do |total|
-        message << "#{total[:cd_incline].to_s.rjust(4)}\t#{total[:minutes].to_i.to_s.rjust(4)}\t#{("%.3f" % total[:distance].round(3)).rjust(7)}\r\n"
-      end
-      event.respond(message + "```")
+    else
+      event.respond('Missing or unrecognized qualifier for command "hills"')
     end
   end
   puts "Command issued: #{event.content}"
