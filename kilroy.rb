@@ -64,51 +64,28 @@ kilroy.message(in: '#status') do |event|
   }
 
   case event.content
-  when '~totals month'
-    message = "```Month totals:\r\n"
-    mysql.connect do |client|
-      all = Hash.new(0)
-      stmt = client.prepare(totals_sql + span_constraints['month'] + ' GROUP BY cd_mph')
-      stmt.execute(Time.now.month, symbolize_keys: true).each do |total|
-        message << "#{total[:cd_mph]}\t#{total[:minutes].to_i.to_s.rjust(4)}\t#{("%.3f" % total[:distance].round(3)).rjust(7)}\r\n"
-        total.keys.each do |key|
-          all[key] += total[key]
-        end
+  when /\A~totals (.*)/
+    command = event.content.split(' ')
+    if(command.count > 1 && ['month', 'year', 'semester'].include?(command[1]))
+      args = []
+      case command[1]
+        when 'month'    then args = [Time.now.month]
+        when 'semester' then args = (Time.now.month.between?(1, 6)) ? [1, 6] : [7, 12]
+        when 'year'     then args = [Time.now.year]
       end
-      message << "ALL\t#{all[:minutes].to_i.to_s.rjust(4)}\t#{("%.3f" % all[:distance].round(3)).rjust(7)}\r\n"
-      event.respond(message + "```")
-      stmt.close
-    end
-  when '~totals semester'
-    message = "```Semester totals:\r\n"
-    mysql.connect do |client|
-      all = Hash.new(0)
-      stmt = client.prepare(totals_sql + span_constraints['semester'] + ' GROUP BY cd_mph')
-      first, last = (Time.now.month.between?(1, 6)) ? [1, 6] : [7, 12]
-      stmt.execute(first, last, symbolize_keys: true).each do |total|
-        message << "#{total[:cd_mph]}\t#{total[:minutes].to_i.to_s.rjust(4)}\t#{("%.3f" % total[:distance].round(3)).rjust(7)}\r\n"
-        total.keys.each do |key|
-          all[key] += total[key]
+      message = "```#{command[1].capitalize} totals:\r\n"
+      mysql.connect do |client|
+        all = Hash.new(0)
+        stmt = client.prepare("#{totals_sql} #{span_constraints[command[1]]} GROUP BY cd_mph")
+        stmt.execute(*args, symbolize_keys: true).each do |total|
+          message << "#{total[:cd_mph]}\t#{total[:minutes].to_i.to_s.rjust(5)}\t#{("%.3f" % total[:distance].round(3)).rjust(7)}\r\n"
+          total.keys.each {|key| all[key] += total[key]}
         end
+        message << "ALL\t#{all[:minutes].to_i.to_s.rjust(5)}\t#{("%.3f" % all[:distance].round(3)).rjust(7)}\r\n"
       end
-      message << "ALL\t#{all[:minutes].to_i.to_s.rjust(4)}\t#{("%.3f" % all[:distance].round(3)).rjust(7)}\r\n"
-      event.respond(message + "```")
-      stmt.close
-    end
-  when '~totals year'
-    message = "```Year totals:\r\n"
-    mysql.connect do |client|
-      all = Hash.new(0)
-      stmt = client.prepare(totals_sql + span_constraints['year'] + ' GROUP BY cd_mph')
-      stmt.execute(Time.now.year, symbolize_keys: true).each do |total|
-        message << "#{total[:cd_mph]}\t#{total[:minutes].to_i.to_s.rjust(5)}\t#{("%.3f" % total[:distance].round(3)).rjust(7)}\r\n"
-        total.keys.each do |key|
-          all[key] += total[key]
-        end
-      end
-      message << "ALL\t#{all[:minutes].to_i.to_s.rjust(4)}\t#{("%.3f" % all[:distance].round(3)).rjust(7)}\r\n"
-      event.respond(message + "```")
-      stmt.close
+      event.respond(message + '```')
+    else
+      event.respond('Missing or unrecognized qualifier for command "totals"')
     end
   when '~hills month'
     message = "```Month hills:\r\n"
