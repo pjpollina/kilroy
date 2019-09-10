@@ -56,7 +56,7 @@ end
 
 kilroy.message(in: '#status') do |event|
   totals_sql = 'SELECT cd_mph, SUM(cd_minutes) AS minutes, SUM(cd_distance) AS distance FROM cardio WHERE '
-  hills_sql  = 'SELECT cd_incline, SUM(cd_minutes) AS minutes, SUM(cd_distance) AS distance FROM cardio WHERE cd_incline > 0.0 AND '
+  hills_sql  = 'SELECT cd_incline, SUM(cd_minutes) AS minutes, SUM(cd_distance) AS distance FROM cardio WHERE cd_mph=4.0 AND '
   span_constraints = {
     'month'    => 'MONTH(cd_date)=?',
     'semester' => 'MONTH(cd_date) BETWEEN ? AND ?',
