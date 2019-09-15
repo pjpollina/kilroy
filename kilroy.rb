@@ -66,7 +66,7 @@ kilroy.message(in: '#status') do |event|
   case event.content
   when /\A~totals (.*)/
     command = event.content.split(' ')
-    if(command.count > 1 && ['month', 'year', 'semester'].include?(command[1]))
+    if(command.count > 1 && span_constraints.keys.include?(command[1]))
       args = []
       case command[1]
         when 'month'    then args = [Time.now.month]
@@ -89,7 +89,7 @@ kilroy.message(in: '#status') do |event|
     end
   when /\A~hills (.*)/
     command = event.content.split(' ')
-    if(command.count > 1 && ['month', 'year', 'semester'].include?(command[1]))
+    if(command.count > 1 && span_constraints.keys.include?(command[1]))
       args = []
       case command[1]
         when 'month'    then args = [Time.now.month]
