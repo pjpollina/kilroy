@@ -78,10 +78,10 @@ kilroy.message(in: '#status') do |event|
         all = Hash.new(0)
         stmt = client.prepare("#{totals_sql} #{span_constraints[command[1]]} GROUP BY cd_mph")
         stmt.execute(*args, symbolize_keys: true).each do |total|
-          message << "#{total[:cd_mph]}\t#{total[:minutes].to_i.to_s.rjust(5)}\t#{("%.3f" % total[:distance].round(3)).rjust(7)}\r\n"
+          message << "#{total[:cd_mph].to_s.ljust(4)}\t#{total[:minutes].to_i.to_s.rjust(5)}\t#{("%.3f" % total[:distance].round(3)).rjust(7)}\r\n"
           total.keys.each {|key| all[key] += total[key]}
         end
-        message << "ALL\t#{all[:minutes].to_i.to_s.rjust(5)}\t#{("%.3f" % all[:distance].round(3)).rjust(7)}\r\n"
+        message << "ALL \t#{all[:minutes].to_i.to_s.rjust(5)}\t#{("%.3f" % all[:distance].round(3)).rjust(7)}\r\n"
       end
       event.respond(message + '```')
     else
