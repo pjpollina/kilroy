@@ -5,6 +5,17 @@ require './mysql'
 REG_RUN  = /\A(?:1)?[0-9]\.[0-9], [0-9]{1,2}m\z/
 REG_HILL = /\A[1-9]\.[0-9], [0-9]{1,2}m, [1-9]\.[0-9]%\z/
 
+def header(month, day)
+  startday = day
+  startday -= 1 until([1, 8, 15, 22, 29].include?(startday))
+  if(startday != 29)
+    return "-- #{Time.new(2000, month, startday).strftime("%b %-d")}-#{startday + 6}\n"
+  else
+    headers = ["Jan 29-31", "Feb 29", "Mar 29-31", "Apr 29-30", "May 29-31", "Jun 29-30", "Jul 29-31", "Aug 29-31", "Sep 29-30", "Oct 29-31", "Nov 29-30", "Dec 29-31"]
+    return "-- #{headers[month - 1]}\n"
+  end
+end
+
 mysql = MySQL.new('kilroy', ENV['discord_bot_token'], 'fitness')
 
 kilroy = Discordrb::Bot.new(
