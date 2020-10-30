@@ -30,7 +30,7 @@ kilroy.message(in: '#cardio') do |event|
     mysql.connect do |client|
       stmt = client.prepare('INSERT INTO cardio(cd_date, cd_mph, cd_minutes) VALUES(CURDATE(), ?, ?)')
       stmt.execute(mph.to_f, minutes.chomp(?m).to_i)
-      File.open(File.expand_path(Time.now.strftime("../cardio-log/%m%B.sql")), 'a') do |file|
+      File.open(File.expand_path(Time.now.strftime("../cardio-log/%m%B.sql")), 'a+') do |file|
         unless(file.readlines.include?(header(Time.now.month, Time.now.day)))
           file.puts header(Time.now.month, Time.now.day)
         end
@@ -44,7 +44,7 @@ kilroy.message(in: '#cardio') do |event|
     mysql.connect do |client|
       stmt = client.prepare('INSERT INTO cardio(cd_date, cd_mph, cd_minutes, cd_incline) VALUES(CURDATE(), ?, ?, ?)')
       stmt.execute(mph.to_f, minutes.chomp(?m).to_i, incline.chomp('%').to_f)
-      File.open(File.expand_path(Time.now.strftime("../cardio-log/%m%B.sql")), 'a') do |file|
+      File.open(File.expand_path(Time.now.strftime("../cardio-log/%m%B.sql")), 'a+') do |file|
         unless(file.readlines.include?(header(Time.now.month, Time.now.day)))
           file.puts header(Time.now.month, Time.now.day)
         end
