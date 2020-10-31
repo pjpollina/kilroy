@@ -3,10 +3,11 @@
 require 'mysql2'
 
 class MySQL
-  def initialize(username, password, database)
+  def initialize(username, password, database, host=localhost)
     @username = username
     @password = password
     @database = database
+    @host     = host
   end
 
   def connect
@@ -18,6 +19,6 @@ class MySQL
   private
 
   def new_client
-    Mysql2::Client.new(username: @username, password: @password, database: @database)
+    Mysql2::Client.new(username: @username, password: @password, database: @database, host: @host)
   end
 end
