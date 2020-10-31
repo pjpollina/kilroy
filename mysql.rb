@@ -3,7 +3,7 @@
 require 'mysql2'
 
 class MySQL
-  def initialize(username, password, database, host=localhost)
+  def initialize(username, password, database, host="localhost")
     @username = username
     @password = password
     @database = database
