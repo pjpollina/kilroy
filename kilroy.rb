@@ -16,7 +16,7 @@ def header(month, day)
   end
 end
 
-mysql = MySQL.new('kilroy', ENV['discord_bot_token'], 'fitness')
+mysql = MySQL.new('kilroy', ENV['discord_bot_token'], 'fitness', ENV['sql_host'] || 'localhost')
 
 kilroy = Discordrb::Bot.new(
   token:      ENV['discord_bot_token'],
