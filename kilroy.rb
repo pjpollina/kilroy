@@ -1,6 +1,6 @@
 require 'dotenv/load'
 require 'discordrb'
-require './mysql'
+require 'lib/mysql'
 
 REG_RUN  = /\A(?:1)?[0-9]\.[0-9], [0-9]{1,2}m\z/
 REG_HILL = /\A[1-9]\.[0-9], [0-9]{1,2}m, [1-9]\.[0-9]%\z/
