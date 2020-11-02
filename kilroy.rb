@@ -23,7 +23,7 @@ end
 def query_backup(mph, minutes, incline="")
   query = "INSERT INTO cardio(cd_date, cd_mph, cd_minutes"
   query << ((incline.empty?) ? ")#{" " * 13}" : ", cd_incline) ")
-  query << "VALUES('#{Time.now.strftime("%F")}', #{mph}, #{minutes.chomp(?m)}"
+  query << "VALUES('#{Time.now.strftime("%F")}', #{(mph.to_f >= 10.0) ? "" : " "}#{mph}, #{minutes.chomp(?m)}"
   query << ((incline.empty?) ? ");" : ", #{incline.chomp('%')});")
   return query
 end
