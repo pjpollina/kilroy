@@ -1,3 +1,5 @@
+$LOAD_PATH << File.expand_path(File.dirname(__FILE__)).chomp('/.')
+
 require 'dotenv/load'
 require 'discordrb'
 require 'lib/mysql'
