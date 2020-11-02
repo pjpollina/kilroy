@@ -20,6 +20,14 @@ def sql_backup(root="../cardio-log")
   File.expand_path(Time.now.strftime("#{root}/%Y/%m%B.sql"))
 end
 
+def query_backup(mph, minutes, incline="")
+  query = "INSERT INTO cardio(cd_date, cd_mph, cd_minutes"
+  query << ((incline.empty?) ? ")#{" " * 13}" : ", cd_incline) ")
+  query << "VALUES('#{Time.now.strftime("%F")}', #{mph}, #{minutes.chomp(?m)}"
+  query << ((incline.empty?) ? ");" : ", #{incline.chomp('%')});")
+  return query
+end
+
 mysql = MySQL.new('kilroy', ENV['discord_bot_token'], 'fitness', ENV['sql_host'] || 'localhost')
 
 kilroy = Discordrb::Bot.new(
@@ -38,7 +46,7 @@ kilroy.message(in: '#cardio') do |event|
         unless(file.readlines.include?(header(Time.now.month, Time.now.day)))
           file.puts header(Time.now.month, Time.now.day)
         end
-        file.puts "INSERT INTO cardio(cd_date, cd_mph, cd_minutes)             VALUES('#{Time.now.strftime("%F")}', #{mph}, #{minutes.chomp(?m)});"
+        file.puts query_backup(mph, minutes)
       end
       stmt.close
     end
@@ -52,7 +60,7 @@ kilroy.message(in: '#cardio') do |event|
         unless(file.readlines.include?(header(Time.now.month, Time.now.day)))
           file.puts header(Time.now.month, Time.now.day)
         end
-        file.puts "INSERT INTO cardio(cd_date, cd_mph, cd_minutes, cd_incline) VALUES('#{Time.now.strftime("%F")}', #{mph}, #{minutes.chomp(?m)}, #{incline.chomp('%')});"
+        file.puts query_backup(mph, minutes, incline)
       end
       stmt.close
     end
