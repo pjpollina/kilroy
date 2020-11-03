@@ -8,6 +8,9 @@ require 'lib/backup'
 REG_RUN  = /\A(?:1)?[0-9]\.[0-9], [0-9]{1,2}m\z/
 REG_HILL = /\A[1-9]\.[0-9], [0-9]{1,2}m, [1-9]\.[0-9]%\z/
 
+INSERT_RUN  = 'INSERT INTO cardio(cd_date, cd_mph, cd_minutes) VALUES(CURDATE(), ?, ?)'
+INSERT_HILL = 'INSERT INTO cardio(cd_date, cd_mph, cd_minutes, cd_incline) VALUES(CURDATE(), ?, ?, ?)'
+
 mysql = MySQL.new('kilroy', ENV['discord_bot_token'], 'fitness', ENV['sql_host'] || 'localhost')
 
 kilroy = Discordrb::Bot.new(
@@ -20,7 +23,7 @@ kilroy.message(in: '#cardio') do |event|
   when REG_RUN
     mph, minutes = event.content.split(', ')
     mysql.connect do |client|
-      stmt = client.prepare('INSERT INTO cardio(cd_date, cd_mph, cd_minutes) VALUES(CURDATE(), ?, ?)')
+      stmt = client.prepare(INSERT_RUN)
       stmt.execute(mph.to_f, minutes.chomp(?m).to_i)
       Backup.write(mph, minutes)
       stmt.close
@@ -29,7 +32,7 @@ kilroy.message(in: '#cardio') do |event|
   when REG_HILL
     mph, minutes, incline = event.content.split(', ')
     mysql.connect do |client|
-      stmt = client.prepare('INSERT INTO cardio(cd_date, cd_mph, cd_minutes, cd_incline) VALUES(CURDATE(), ?, ?, ?)')
+      stmt = client.prepare(INSERT_HILL)
       stmt.execute(mph.to_f, minutes.chomp(?m).to_i, incline.chomp('%').to_f)
       Backup.write(mph, minutes, incline)
       stmt.close
