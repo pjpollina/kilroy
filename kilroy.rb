@@ -22,7 +22,7 @@ kilroy.message(in: '#cardio') do |event|
     mysql.connect do |client|
       stmt = client.prepare('INSERT INTO cardio(cd_date, cd_mph, cd_minutes) VALUES(CURDATE(), ?, ?)')
       stmt.execute(mph.to_f, minutes.chomp(?m).to_i)
-      Backup.write_backup(mph, minutes)
+      Backup.write(mph, minutes)
       stmt.close
     end
     puts "Run:\t#{event.content}"
@@ -31,7 +31,7 @@ kilroy.message(in: '#cardio') do |event|
     mysql.connect do |client|
       stmt = client.prepare('INSERT INTO cardio(cd_date, cd_mph, cd_minutes, cd_incline) VALUES(CURDATE(), ?, ?, ?)')
       stmt.execute(mph.to_f, minutes.chomp(?m).to_i, incline.chomp('%').to_f)
-      Backup.write_backup(mph, minutes, incline)
+      Backup.write(mph, minutes, incline)
       stmt.close
     end
     puts "Hill:\t#{event.content}"

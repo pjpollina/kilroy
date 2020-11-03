@@ -26,7 +26,7 @@ module Backup
     return query
   end
 
-  def write_backup(mph, minutes, incline="")
+  def write(mph, minutes, incline="")
     File.open(filepath, 'a+') do |file|
       unless(file.readlines.include?(header(Time.now.month, Time.now.day)))
         file.puts header(Time.now.month, Time.now.day)
