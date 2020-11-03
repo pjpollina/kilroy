@@ -18,7 +18,7 @@ module Backup
     File.expand_path(Time.now.strftime("#{root}/%Y/%m%B.sql"))
   end
 
-  def query_backup(mph, minutes, incline="")
+  def query(mph, minutes, incline="")
     query = "INSERT INTO cardio(cd_date, cd_mph, cd_minutes"
     query << ((incline.empty?) ? ")#{" " * 13}" : ", cd_incline) ")
     query << "VALUES('#{Time.now.strftime("%F")}', #{(mph.to_f >= 10.0) ? "" : " "}#{mph}, #{minutes.chomp(?m)}"
@@ -31,7 +31,7 @@ module Backup
       unless(file.readlines.include?(header(Time.now.month, Time.now.day)))
         file.puts header(Time.now.month, Time.now.day)
       end
-      file.puts query_backup(mph, minutes, incline)
+      file.puts query(mph, minutes, incline)
     end
   end
 end
