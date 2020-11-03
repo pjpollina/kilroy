@@ -61,8 +61,8 @@ kilroy.message(in: '#status') do |event|
   totals_sql = 'SELECT cd_mph, SUM(cd_minutes) AS minutes, SUM(cd_distance) AS distance FROM cardio WHERE '
   hills_sql  = 'SELECT cd_incline, SUM(cd_minutes) AS minutes, SUM(cd_distance) AS distance FROM cardio WHERE cd_mph=4.0 AND '
   span_constraints = {
-    'month'    => 'MONTH(cd_date)=?',
-    'semester' => 'MONTH(cd_date) BETWEEN ? AND ?',
+    'month'    => 'MONTH(cd_date)=? AND YEAR(cd_date)=?',
+    'semester' => 'MONTH(cd_date) BETWEEN ? AND ? AND YEAR(cd_date)=?',
     'year'     => 'YEAR(cd_date)=?'
   }
 
@@ -72,8 +72,8 @@ kilroy.message(in: '#status') do |event|
     if(command.count > 1 && span_constraints.keys.include?(command[1]))
       args = []
       case command[1]
-        when 'month'    then args = [Time.now.month]
-        when 'semester' then args = (Time.now.month.between?(1, 6)) ? [1, 6] : [7, 12]
+        when 'month'    then args = [Time.now.month, Time.now.year]
+        when 'semester' then args = ((Time.now.month.between?(1, 6)) ? [1, 6] : [7, 12]) << Time.now.year
         when 'year'     then args = [Time.now.year]
       end
       message = "```#{command[1].capitalize} totals:\r\n"
@@ -95,8 +95,8 @@ kilroy.message(in: '#status') do |event|
     if(command.count > 1 && span_constraints.keys.include?(command[1]))
       args = []
       case command[1]
-        when 'month'    then args = [Time.now.month]
-        when 'semester' then args = (Time.now.month.between?(1, 6)) ? [1, 6] : [7, 12]
+        when 'month'    then args = [Time.now.month, Time.now.year]
+        when 'semester' then args = ((Time.now.month.between?(1, 6)) ? [1, 6] : [7, 12]) << Time.now.year
         when 'year'     then args = [Time.now.year]
       end
       message = "```#{command[1].capitalize} hills:\r\n"
