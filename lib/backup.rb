@@ -14,7 +14,7 @@ module Backup
     end
   end
 
-  def sql_backup(root="../cardio-log")
+  def filepath(root="../cardio-log")
     File.expand_path(Time.now.strftime("#{root}/%Y/%m%B.sql"))
   end
 
@@ -27,7 +27,7 @@ module Backup
   end
 
   def write_backup(mph, minutes, incline="")
-    File.open(sql_backup, 'a+') do |file|
+    File.open(filepath, 'a+') do |file|
       unless(file.readlines.include?(header(Time.now.month, Time.now.day)))
         file.puts header(Time.now.month, Time.now.day)
       end
