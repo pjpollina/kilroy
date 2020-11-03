@@ -7,42 +7,6 @@ require 'lib/mysql'
 REG_RUN  = /\A(?:1)?[0-9]\.[0-9], [0-9]{1,2}m\z/
 REG_HILL = /\A[1-9]\.[0-9], [0-9]{1,2}m, [1-9]\.[0-9]%\z/
 
-module Backup
-  extend self
-
-  def header(month, day)
-    startday = day
-    startday -= 1 until([1, 8, 15, 22, 29].include?(startday))
-    if(startday != 29)
-      return "-- #{Time.new(2000, month, startday).strftime("%b %-d")}-#{startday + 6}\n"
-    else
-      headers = ["Jan 29-31", "Feb 29", "Mar 29-31", "Apr 29-30", "May 29-31", "Jun 29-30", "Jul 29-31", "Aug 29-31", "Sep 29-30", "Oct 29-31", "Nov 29-30", "Dec 29-31"]
-      return "-- #{headers[month - 1]}\n"
-    end
-  end
-
-  def sql_backup(root="../cardio-log")
-    File.expand_path(Time.now.strftime("#{root}/%Y/%m%B.sql"))
-  end
-
-  def query_backup(mph, minutes, incline="")
-    query = "INSERT INTO cardio(cd_date, cd_mph, cd_minutes"
-    query << ((incline.empty?) ? ")#{" " * 13}" : ", cd_incline) ")
-    query << "VALUES('#{Time.now.strftime("%F")}', #{(mph.to_f >= 10.0) ? "" : " "}#{mph}, #{minutes.chomp(?m)}"
-    query << ((incline.empty?) ? ");" : ", #{incline.chomp('%')});")
-    return query
-  end
-
-  def write_backup(mph, minutes, incline="")
-    File.open(sql_backup, 'a+') do |file|
-      unless(file.readlines.include?(header(Time.now.month, Time.now.day)))
-        file.puts header(Time.now.month, Time.now.day)
-      end
-      file.puts query_backup(mph, minutes, incline)
-    end
-  end
-end
-
 mysql = MySQL.new('kilroy', ENV['discord_bot_token'], 'fitness', ENV['sql_host'] || 'localhost')
 
 kilroy = Discordrb::Bot.new(
