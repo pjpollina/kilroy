@@ -11,6 +11,18 @@ REG_HILL = /\A[1-9]\.[0-9], [0-9]{1,2}m, [1-9]\.[0-9]%\z/
 INSERT_RUN  = 'INSERT INTO cardio(cd_date, cd_mph, cd_minutes) VALUES(CURDATE(), ?, ?)'
 INSERT_HILL = 'INSERT INTO cardio(cd_date, cd_mph, cd_minutes, cd_incline) VALUES(CURDATE(), ?, ?, ?)'
 
+def month_args(offset=0)
+  month, year = Time.now.month, Time.now.year
+  if(offset != 0)
+    month -= offset
+    until(month > 0)
+      month += 12
+      year -= 1
+    end
+  end
+  return month, year
+end
+
 mysql = MySQL.new('kilroy', ENV['discord_bot_token'], 'fitness', ENV['sql_host'] || 'localhost')
 
 kilroy = Discordrb::Bot.new(
@@ -84,7 +96,7 @@ kilroy.message(in: '#status') do |event|
   if(command.count > 1 && span_constraints.keys.include?(command[1]))
     args = []
     case command[1]
-      when 'month'    then args = [Time.now.month, Time.now.year]
+      when 'month'    then args = month_args
       when 'semester' then args = ((Time.now.month.between?(1, 6)) ? [1, 6] : [7, 12]) << Time.now.year
       when 'year'     then args = [Time.now.year]
     end
