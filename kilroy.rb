@@ -36,6 +36,13 @@ def semester_args(offset=0)
   return sem, sem + 5, year
 end
 
+def total_row(total)
+  row = "#{total[:cd_mph].to_s.ljust(4)}\t"
+  row << "#{total[:minutes].to_i.to_s.rjust(5)}\t"
+  row << "#{("%.3f" % total[:distance].round(3)).rjust(7)}\r\n"
+  return row
+end
+
 mysql = MySQL.new('kilroy', ENV['discord_bot_token'], 'fitness', ENV['sql_host'] || 'localhost')
 
 kilroy = Discordrb::Bot.new(
@@ -119,7 +126,7 @@ kilroy.message(in: '#status') do |event|
       stmt = client.prepare(statement)
       stmt.execute(*args, symbolize_keys: true).each do |total|
         if(command[0] == '~totals')
-          message << "#{total[:cd_mph].to_s.ljust(4)}\t#{total[:minutes].to_i.to_s.rjust(5)}\t#{("%.3f" % total[:distance].round(3)).rjust(7)}\r\n"
+          message << total_row(total)
           total.keys.each {|key| all[key] += total[key]}
         else
           message << "#{total[:cd_incline].to_s.rjust(4)}\t#{total[:minutes].to_i.to_s.rjust(4)}\t#{("%.3f" % total[:distance].round(3)).rjust(7)}\r\n"
