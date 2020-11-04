@@ -23,6 +23,19 @@ def month_args(offset=0)
   return month, year
 end
 
+def semester_args(offset=0)
+  sem = (Time.now.month < 7) ? 1 : 7
+  year = Time.now.year
+  if(offset != 0)
+    sem -= (offset * 6)
+    until(sem > 0)
+      sem += 12
+      year -= 1
+    end
+  end
+  return sem, sem + 5, year
+end
+
 mysql = MySQL.new('kilroy', ENV['discord_bot_token'], 'fitness', ENV['sql_host'] || 'localhost')
 
 kilroy = Discordrb::Bot.new(
@@ -97,7 +110,7 @@ kilroy.message(in: '#status') do |event|
     args = []
     case command[1]
       when 'month'    then args = month_args
-      when 'semester' then args = ((Time.now.month.between?(1, 6)) ? [1, 6] : [7, 12]) << Time.now.year
+      when 'semester' then args = semester_args
       when 'year'     then args = [Time.now.year]
     end
     message = "```#{command[1].capitalize} #{command[0][1..-1]}:\r\n"
