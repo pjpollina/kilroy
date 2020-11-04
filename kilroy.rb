@@ -43,6 +43,13 @@ def total_row(total)
   return row
 end
 
+def hills_row(total)
+  row = "#{total[:cd_incline].to_s.rjust(4)}\t"
+  row << "#{total[:minutes].to_i.to_s.rjust(4)}\t"
+  row << "#{("%.3f" % total[:distance].round(3)).rjust(7)}\r\n"
+  return row
+end
+
 mysql = MySQL.new('kilroy', ENV['discord_bot_token'], 'fitness', ENV['sql_host'] || 'localhost')
 
 kilroy = Discordrb::Bot.new(
@@ -129,7 +136,7 @@ kilroy.message(in: '#status') do |event|
           message << total_row(total)
           total.keys.each {|key| all[key] += total[key]}
         else
-          message << "#{total[:cd_incline].to_s.rjust(4)}\t#{total[:minutes].to_i.to_s.rjust(4)}\t#{("%.3f" % total[:distance].round(3)).rjust(7)}\r\n"
+          message << hills_row(total)
         end
       end
       message << "ALL \t#{all[:minutes].to_i.to_s.rjust(5)}\t#{("%.3f" % all[:distance].round(3)).rjust(7)}\r\n" unless all.empty?
