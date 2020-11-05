@@ -139,7 +139,10 @@ kilroy.message(in: '#status') do |event|
           message << hills_row(total)
         end
       end
-      message << "ALL \t#{all[:minutes].to_i.to_s.rjust(5)}\t#{("%.3f" % all[:distance].round(3)).rjust(7)}\r\n" unless all.empty?
+      unless(all.empty?)
+        all[:cd_mph] = "ALL"
+        message << total_row(all)
+      end
     end
     event.respond(message + '```')
   else
