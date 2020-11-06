@@ -119,7 +119,7 @@ kilroy.message(in: '#status') do |event|
   end
 
   command = event.content.split(' ')
-  statement = "#{statements[command[0]][0]} #{span_constraints[command[1]]} GROUP BY cd_#{statements[command[0]][1]}"
+  statement = "#{statements[command[0]][0]} #{span_constraints[command[1]]} GROUP BY cd_#{statements[command[0]][1]} ORDER BY cd_#{statements[command[0]][1]}"
   if(command.count > 1 && span_constraints.keys.include?(command[1]))
     args = []
     case command[1]
