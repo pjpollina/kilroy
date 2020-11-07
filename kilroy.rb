@@ -123,10 +123,15 @@ kilroy.message(in: '#status') do |event|
   command = event.content.split(' ')
   if(command.count > 1 && ['month', 'semester', 'year'].include?(command[1]))
     args = []
+    offset = 0
+    if(command.count > 2)
+      offset = command[2].to_i.abs
+      offset += 1 if command[2].eql?("last")
+    end
     case command[1]
-      when 'month'    then args = month_args
-      when 'semester' then args = semester_args
-      when 'year'     then args = [Time.now.year]
+      when 'month'    then args = month_args(offset)
+      when 'semester' then args = semester_args(offset)
+      when 'year'     then args = [Time.now.year - offset]
     end
     message = "```#{command[1].capitalize} #{command[0][1..-1]}:\r\n"
     mysql.connect do |client|
