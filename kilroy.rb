@@ -50,6 +50,24 @@ def hills_row(total)
   return row
 end
 
+def getter_statement(command)
+  stmt, grouper = "", ""
+  case command[0]
+  when "~totals"
+    stmt = 'SELECT cd_mph, SUM(cd_minutes) AS minutes, SUM(cd_distance) AS distance FROM cardio WHERE '
+    grouper = 'mph'
+  when "~hills"
+    stmt = 'SELECT cd_incline, SUM(cd_minutes) AS minutes, SUM(cd_distance) AS distance FROM cardio WHERE cd_mph=4.0 AND '
+    grouper = 'incline'
+  end
+  case command[1]
+    when 'month'    then stmt += 'MONTH(cd_date)=? AND YEAR(cd_date)=?'
+    when 'semester' then stmt += 'MONTH(cd_date) BETWEEN ? AND ? AND YEAR(cd_date)=?'
+    when 'year'     then stmt += 'YEAR(cd_date)=?'
+  end
+  return stmt += " GROUP BY cd_#{grouper} ORDER BY cd_#{grouper}"
+end
+
 mysql = MySQL.new('kilroy', ENV['discord_bot_token'], 'fitness', ENV['sql_host'] || 'localhost')
 
 kilroy = Discordrb::Bot.new(
@@ -97,30 +115,13 @@ kilroy.message(in: '#weigh-ins') do |event|
 end
 
 kilroy.message(in: '#status') do |event|
-  statements = {
-    "~totals" => [
-      'SELECT cd_mph, SUM(cd_minutes) AS minutes, SUM(cd_distance) AS distance FROM cardio WHERE ',
-      'mph'
-    ],
-    "~hills" => [
-      'SELECT cd_incline, SUM(cd_minutes) AS minutes, SUM(cd_distance) AS distance FROM cardio WHERE cd_mph=4.0 AND ',
-      'incline'
-    ]
-  }
-  span_constraints = {
-    'month'    => 'MONTH(cd_date)=? AND YEAR(cd_date)=?',
-    'semester' => 'MONTH(cd_date) BETWEEN ? AND ? AND YEAR(cd_date)=?',
-    'year'     => 'YEAR(cd_date)=?'
-  }
-
   unless(event.content.match?(/\A~totals (.*)/) || event.content.match?(/\A~hills (.*)/))
     event.respond "Unknown command #{event.content}"
     next
   end
 
   command = event.content.split(' ')
-  statement = "#{statements[command[0]][0]} #{span_constraints[command[1]]} GROUP BY cd_#{statements[command[0]][1]} ORDER BY cd_#{statements[command[0]][1]}"
-  if(command.count > 1 && span_constraints.keys.include?(command[1]))
+  if(command.count > 1 && ['month', 'semester', 'year'].include?(command[1]))
     args = []
     case command[1]
       when 'month'    then args = month_args
@@ -130,7 +131,7 @@ kilroy.message(in: '#status') do |event|
     message = "```#{command[1].capitalize} #{command[0][1..-1]}:\r\n"
     mysql.connect do |client|
       all = Hash.new(0)
-      stmt = client.prepare(statement)
+      stmt = client.prepare(getter_statement(command))
       stmt.execute(*args, symbolize_keys: true).each do |total|
         if(command[0] == '~totals')
           message << total_row(total)
