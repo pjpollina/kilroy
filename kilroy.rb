@@ -155,24 +155,13 @@ kilroy.message(in: '#status') do |event|
   command = event.content.split(' ')
   if(command.count > 1 && ['month', 'semester', 'year'].include?(command[1]))
     args = getter_args(command)
-    message = "```#{command[1].capitalize} #{command[0][1..-1]}:\r\n"
+    message = ""
     mysql.connect do |client|
-      all = Hash.new(0)
       stmt = client.prepare(getter_statement(command))
-      stmt.execute(*args, symbolize_keys: true).each do |total|
-        if(command[0] == '~totals')
-          message << total_row(total)
-          total.keys.each {|key| all[key] += total[key]}
-        else
-          message << hills_row(total)
-        end
-      end
-      unless(all.empty?)
-        all[:cd_mph] = "ALL"
-        message << total_row(all)
-      end
+      message << status_response(stmt.execute(*args, symbolize_keys: true), command)
+      stmt.close
     end
-    event.respond(message + '```')
+    event.respond(message)
   else
     event.respond("Missing or unrecognized qualifier for command \"#{command[0][1..-1]}\"")
   end
