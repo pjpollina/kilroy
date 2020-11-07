@@ -158,11 +158,11 @@ kilroy.message(in: '#status') do |event|
 
   command = event.content.split(' ')
   if(command.count > 1 && ['month', 'semester', 'year'].include?(command[1]))
-    args = getter_args(command)
+    args = Status.getter_args(command)
     message = ""
     mysql.connect do |client|
-      stmt = client.prepare(getter_statement(command))
-      message << status_response(stmt.execute(*args, symbolize_keys: true), command)
+      stmt = client.prepare(Status.getter_statement(command))
+      message << Status.status_response(stmt.execute(*args, symbolize_keys: true), command)
       stmt.close
     end
     event.respond(message)
