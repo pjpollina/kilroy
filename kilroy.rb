@@ -83,6 +83,23 @@ def getter_args(command)
   return args
 end
 
+def status_response(data, command)
+  message = "```#{command[1].capitalize} #{command[0][1..-1]}:\r\n"
+  case command[0]
+  when "~totals"
+    all = Hash.new(0)
+    data.each do |total|
+      message << total_row(total)
+      total.keys.each {|key| all[key] += total[key]}
+    end
+    all[:cd_mph] = "ALL"
+    message << total_row(all)
+  when "~hills"
+    data.each{|total| message << hills_row(total)}
+  end
+  return message + '```'
+end
+
 mysql = MySQL.new('kilroy', ENV['discord_bot_token'], 'fitness', ENV['sql_host'] || 'localhost')
 
 kilroy = Discordrb::Bot.new(
