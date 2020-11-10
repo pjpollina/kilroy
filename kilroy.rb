@@ -70,7 +70,7 @@ kilroy.message(in: '#status') do |event|
     message = ""
     mysql.connect do |client|
       stmt = client.prepare(Status.getter_statement(command))
-      message << Status.status_response(stmt.execute(*args, symbolize_keys: true), command)
+      message << Status.response(stmt.execute(*args, symbolize_keys: true), command)
       stmt.close
     end
     event.respond(message)

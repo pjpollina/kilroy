@@ -75,7 +75,7 @@ module Status
     return args
   end
 
-  def status_response(data, command)
+  def response(data, command)
     message = "```#{command[1].capitalize} #{command[0][1..-1]}:\r\n"
     case command[0]
     when "~totals"
