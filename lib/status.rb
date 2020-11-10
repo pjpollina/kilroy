@@ -91,4 +91,10 @@ module Status
     end
     return message + '```'
   end
+
+  def valid_command?(event, invalid_response)
+    valid = (event.content.match?(/\A~totals (.*)/) || event.content.match?(/\A~hills (.*)/))
+    event.respond invalid_response unless valid
+    return valid
+  end
 end

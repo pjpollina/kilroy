@@ -59,11 +59,7 @@ kilroy.message(in: '#weigh-ins') do |event|
 end
 
 kilroy.message(in: '#status') do |event|
-  unless(event.content.match?(/\A~totals (.*)/) || event.content.match?(/\A~hills (.*)/))
-    event.respond "Unknown command #{event.content}"
-    next
-  end
-
+  next unless Status.valid_command?(event, "Unknown command #{event.content}")
   command = event.content.split(' ')
   if(command.count > 1 && ['month', 'semester', 'year'].include?(command[1]))
     mysql.connect do |client|
