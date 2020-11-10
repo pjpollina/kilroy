@@ -66,14 +66,11 @@ kilroy.message(in: '#status') do |event|
 
   command = event.content.split(' ')
   if(command.count > 1 && ['month', 'semester', 'year'].include?(command[1]))
-    args = Status.getter_args(command)
-    message = ""
     mysql.connect do |client|
       stmt = client.prepare(Status.getter_statement(command))
-      message << Status.response(stmt.execute(*args, symbolize_keys: true), command)
+      event.respond(Status.response(stmt.execute(*Status.getter_args(command), symbolize_keys: true), command))
       stmt.close
     end
-    event.respond(message)
   else
     event.respond("Missing or unrecognized qualifier for command \"#{command[0][1..-1]}\"")
   end
