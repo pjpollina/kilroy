@@ -23,21 +23,13 @@ kilroy.message(in: '#cardio') do |event|
   case event.content
   when REG_RUN
     mph, minutes = event.content.split(', ')
-    mysql.connect do |client|
-      stmt = client.prepare(INSERT_RUN)
-      stmt.execute(mph.to_f, minutes.chomp(?m).to_i)
-      Backup.write(mph, minutes)
-      stmt.close
-    end
+    mysql.execute(INSERT_RUN, [mph.to_f, minutes.chomp(?m).to_i])
+    Backup.write(mph, minutes)
     puts "Run:\t#{event.content}"
   when REG_HILL
     mph, minutes, incline = event.content.split(', ')
-    mysql.connect do |client|
-      stmt = client.prepare(INSERT_HILL)
-      stmt.execute(mph.to_f, minutes.chomp(?m).to_i, incline.chomp('%').to_f)
-      Backup.write(mph, minutes, incline)
-      stmt.close
-    end
+    mysql.execute(INSERT_HILL, [mph.to_f, minutes.chomp(?m).to_i, incline.chomp('%').to_f])
+    Backup.write(mph, minutes, incline)
     puts "Hill:\t#{event.content}"
   else
     event.respond("Unrecognized cardio format")
@@ -62,10 +54,8 @@ kilroy.message(in: '#status') do |event|
   next unless Status.valid_command?(event, "Unknown command #{event.content}")
   command = event.content.split(' ')
   if(command.count > 1 && ['month', 'semester', 'year'].include?(command[1]))
-    mysql.connect do |client|
-      stmt = client.prepare(Status.getter_statement(command))
-      event.respond(Status.response(stmt.execute(*Status.getter_args(command), symbolize_keys: true), command))
-      stmt.close
+    mysql.execute(Status.getter_statement(command), Status.getter_args(command)) do |results|
+      event.respond(Status.response(results, command))
     end
   else
     event.respond("Missing or unrecognized qualifier for command \"#{command[0][1..-1]}\"")
