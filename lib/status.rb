@@ -16,15 +16,8 @@ module Status
   end
 
   def semester_args(offset=0)
-    sem = (Time.now.month < 7) ? 1 : 7
-    year = Time.now.year
-    if(offset != 0)
-      sem -= (offset * 6)
-      until(sem > 0)
-        sem += 12
-        year -= 1
-      end
-    end
+    month = Time.now.month - ((Time.now.month < 7) ? 1 : 7)
+    sem, year = month_args(month + (offset * 6))
     return sem, sem + 5, year
   end
 
