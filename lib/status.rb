@@ -42,6 +42,13 @@ module Status
     return row
   end
 
+  def row(total, main_key)
+    row = "#{total[main_key].to_s.ljust(4)}\t"
+    row << "#{total[:minutes].to_i.to_s.rjust(5)}\t"
+    row << "#{("%.3f" % total[:distance].round(3)).rjust(7)}\r\n"
+    return row
+  end
+
   def getter_statement(command)
     stmt, grouper = "", ""
     case command[0]
@@ -81,13 +88,13 @@ module Status
     when "~totals"
       all = Hash.new(0)
       data.each do |total|
-        message << total_row(total)
+        message << row(total, :cd_mph)
         total.keys.each {|key| all[key] += total[key]}
       end
       all[:cd_mph] = "ALL"
-      message << total_row(all)
+      message << row(all, :cd_mph)
     when "~hills"
-      data.each{|total| message << hills_row(total)}
+      data.each{|total| message << row(total, :cd_incline)}
     end
     return message + '```'
   end
