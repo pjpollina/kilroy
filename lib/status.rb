@@ -36,7 +36,7 @@ module Status
   end
 
   def hills_row(total)
-    row = "#{total[:cd_incline].to_s.rjust(4)}\t"
+    row = "#{total[:cd_incline].to_s.ljust(4)}\t"
     row << "#{total[:minutes].to_i.to_s.rjust(4)}\t"
     row << "#{("%.3f" % total[:distance].round(3)).rjust(7)}\r\n"
     return row
