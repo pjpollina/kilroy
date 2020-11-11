@@ -36,20 +36,6 @@ kilroy.message(in: '#cardio') do |event|
   end
 end
 
-kilroy.message(in: '#weigh-ins') do |event|
-  weight = event.content.chomp('lbs').to_f
-  if(weight != 0.0)
-    mysql.connect do |client|
-      stmt = client.prepare('INSERT INTO weigh_ins(wi_date, wi_lbs) VALUES(CURDATE(), ?)')
-      stmt.execute(weight)
-      stmt.close
-    end
-    puts "Weigh-in:\t#{event.content}"
-  else
-    event.respond("Improper weight format")
-  end
-end
-
 kilroy.message(in: '#status') do |event|
   next unless Status.valid_command?(event, "Unknown command #{event.content}")
   command = event.content.split(' ')
