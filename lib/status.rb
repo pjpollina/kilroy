@@ -29,14 +29,10 @@ module Status
   end
 
   def getter_statement(command)
-    stmt, grouper = "", ""
-    case command[0]
-    when "~totals"
-      stmt = 'SELECT cd_mph, SUM(cd_minutes) AS minutes, SUM(cd_distance) AS distance FROM cardio WHERE '
-      grouper = 'mph'
-    when "~hills"
-      stmt = 'SELECT cd_incline, SUM(cd_minutes) AS minutes, SUM(cd_distance) AS distance FROM cardio WHERE cd_mph=4.0 AND '
-      grouper = 'incline'
+    stmt, grouper = "SELECT cd_mph, SUM(cd_minutes) AS minutes, SUM(cd_distance) AS distance FROM cardio WHERE ", "mph"
+    if(command[0].eql?("~hills"))
+      stmt = stmt.gsub("mph", "incline") + "cd_mph=4.0 AND "
+      grouper = "incline"
     end
     case command[1]
       when 'month'    then stmt += 'MONTH(cd_date)=? AND YEAR(cd_date)=?'
