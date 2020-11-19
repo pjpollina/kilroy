@@ -3,6 +3,8 @@
 module Backup
   extend self
 
+  ROOT = ENV['backup_dir']
+
   def header(month, day)
     startday = day
     startday -= 1 until([1, 8, 15, 22, 29].include?(startday))
@@ -14,7 +16,7 @@ module Backup
     end
   end
 
-  def filepath(root="../cardio-log")
+  def filepath(root=ROOT)
     File.expand_path(Time.now.strftime("#{root}/%Y/%m%B.sql"))
   end
 
