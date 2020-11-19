@@ -71,7 +71,7 @@ module Status
     when "~hills"
       data.each{|total| message << row(total, :cd_incline)}
     end
-    return message + '```'
+    return message.chomp + '```'
   end
 
   def valid_command?(event, invalid_response)
