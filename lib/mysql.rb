@@ -16,7 +16,7 @@ class MySQL
     client.close
   end
 
-  def execute(statement, args)
+  def execute(statement, args=[])
     connect do |client|
       stmt = client.prepare(statement)
       results = stmt.execute(*args, symbolize_keys: true)
