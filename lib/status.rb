@@ -70,6 +70,12 @@ module Status
       message << row(all, :cd_mph)
     when "~hills"
       data.each{|total| message << row(total, :cd_incline)}
+    when "~roundoff"
+      data.each do |total|
+        next if(total[:distance].to_f % 1 == 0)
+        rtime, rdistance = round_off(total[:cd_mph].to_f, total[:minutes].to_i)
+        message << "#{total[:cd_mph]}mph:  #{rtime} minutes to reach #{rdistance}\n"
+      end
     end
     return message.chomp + '```'
   end
