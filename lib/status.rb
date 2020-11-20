@@ -81,7 +81,7 @@ module Status
   end
 
   def valid_command?(event, invalid_response)
-    valid = (event.content.match?(/\A~totals (.*)/) || event.content.match?(/\A~hills (.*)/))
+    valid = (event.content.match?(/\A~totals (.*)/) || event.content.match?(/\A~hills (.*)/) || event.content.match?(/\A~roundoff (.*)/))
     event.respond invalid_response unless valid
     return valid
   end
