@@ -79,4 +79,14 @@ module Status
     event.respond invalid_response unless valid
     return valid
   end
+
+  def round_off(speed, time)
+    roundtime = 30 - (time % 30)
+    rounddistance = (speed / 60) * (time + roundtime)
+    until(rounddistance % 1 == 0)
+      roundtime += 30
+      rounddistance = (speed / 60) * (time + roundtime)
+    end
+    return roundtime, rounddistance
+  end
 end
