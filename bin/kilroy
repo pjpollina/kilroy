@@ -44,7 +44,7 @@ end
 kilroy.message(in: '#status') do |event|
   next unless Status.valid_command?(event, "Unknown command #{event.content}")
   command = event.content.split(' ')
-  if(command.count > 1 && ['month', 'semester', 'year'].include?(command[1]))
+  if(Status.valid_args?(command))
     mysql.execute(Status.getter_statement(command), Status.getter_args(command)) do |results|
       event.respond(Status.response(results, command))
     end

@@ -86,6 +86,10 @@ module Status
     return valid
   end
 
+  def valid_args?(command)
+    (command.count > 1 && ['month', 'semester', 'year'].include?(command[1]))
+  end
+
   def round_off(speed, time)
     roundtime = 30 - (time % 30)
     rounddistance = (speed / 60) * (time + roundtime)
