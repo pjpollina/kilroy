@@ -10,7 +10,7 @@ require 'lib/status'
 require 'lib/tweeter'
 
 REG_RUN  = /\A([1-9]|[1-9][0-9])\.(0|5), ([1-9]|[1-5][0-9]|60)m\z/
-REG_HILL = /\A([1-9]|[1-9][0-9])\.(0|5), ([1-9]|[1-5][0-9]|60)m, ([1-9]|[1-9][0-9])\.(0|5)%\z/
+REG_HILL = /#{REG_RUN.source.chomp('\z')}, ([1-9]|[1-9][0-9])\.(0|5)%\z/
 
 INSERT_RUN  = 'INSERT INTO cardio(cd_date, cd_mph, cd_minutes) VALUES(CURDATE(), ?, ?)'
 INSERT_HILL = 'INSERT INTO cardio(cd_date, cd_mph, cd_minutes, cd_incline) VALUES(CURDATE(), ?, ?, ?)'
