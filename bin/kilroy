@@ -7,6 +7,7 @@ require 'discordrb'
 require 'lib/mysql'
 require 'lib/backup'
 require 'lib/status'
+require 'lib/cardio'
 require 'lib/tweeter'
 
 REG_RUN  = /\A([1-9]|[1-9][0-9])\.(0|5), ([1-9]|[1-5][0-9]|60)m\z/
