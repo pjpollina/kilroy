@@ -26,20 +26,8 @@ kilroy = Discordrb::Bot.new(
 )
 
 kilroy.message(in: '#cardio') do |event|
-  case event.content
-  when REG_RUN
-    mph, minutes = event.content.split(', ')
-    mysql.execute(INSERT_RUN, [mph.to_f, minutes.chomp(?m).to_i])
-    Backup.write(mph, minutes)
-    puts "Run:\t#{event.content}"
-  when REG_HILL
-    mph, minutes, incline = event.content.split(', ')
-    mysql.execute(INSERT_HILL, [mph.to_f, minutes.chomp(?m).to_i, incline.chomp('%').to_f])
-    Backup.write(mph, minutes, incline)
-    puts "Hill:\t#{event.content}"
-  else
-    event.respond("Unrecognized cardio format")
-  end
+  response = Cardio.insert(event.content, mysql)
+  event.respond(response) unless response.empty?
 end
 
 kilroy.message(in: '#status') do |event|
