@@ -21,6 +21,16 @@ module Status
     return sem, sem + 5, year
   end
 
+  def round_off(speed, time)
+    roundtime = 30 - (time % 30)
+    rounddistance = (speed / 60) * (time + roundtime)
+    until(rounddistance % 1 == 0)
+      roundtime += 30
+      rounddistance = (speed / 60) * (time + roundtime)
+    end
+    return roundtime, rounddistance
+  end
+
   def row(total, main_key)
     row = "#{total[main_key].to_s.ljust(4)}\t"
     row << "#{total[:minutes].to_i.to_s.rjust(5)}\t"
@@ -57,6 +67,16 @@ module Status
     return args
   end
 
+  def valid_command?(event, invalid_response)
+    valid = event.content.match?(/\A~(totals|hills|roundoff) (.*)/)
+    event.respond invalid_response unless valid
+    return valid
+  end
+
+  def valid_args?(command)
+    (command.count > 1 && ['month', 'semester', 'year'].include?(command[1]))
+  end
+
   def response(data, command)
     message = "```#{command[1].capitalize} #{command[0][1..-1]}:\r\n"
     case command[0]
@@ -78,26 +98,6 @@ module Status
       end
     end
     return message.chomp + '```'
-  end
-
-  def valid_command?(event, invalid_response)
-    valid = event.content.match?(/\A~(totals|hills|roundoff) (.*)/)
-    event.respond invalid_response unless valid
-    return valid
-  end
-
-  def valid_args?(command)
-    (command.count > 1 && ['month', 'semester', 'year'].include?(command[1]))
-  end
-
-  def round_off(speed, time)
-    roundtime = 30 - (time % 30)
-    rounddistance = (speed / 60) * (time + roundtime)
-    until(rounddistance % 1 == 0)
-      roundtime += 30
-      rounddistance = (speed / 60) * (time + roundtime)
-    end
-    return roundtime, rounddistance
   end
 
   def command_response(event, mysql)
