@@ -75,8 +75,19 @@ module Status
     (command.count > 1 && ['month', 'semester', 'year'].include?(command[1]))
   end
 
+  def header(command)
+    header = '```'
+    if((command[-1].to_i != 0) && command.count > 2)
+      header << "#{command[1].capitalize} #{command[0][1..-1]} (-#{command[-1].to_i.abs})"
+    else
+      header << command[-1].capitalize
+      command.reverse[1..-1].each {|c| header << " #{c.gsub('~', '')}"}
+    end
+    return header + ":\r\n"
+  end
+
   def response(data, command)
-    message = "```#{command[1].capitalize} #{command[0][1..-1]}:\r\n"
+    message = header(command)
     case command[0]
     when "~totals"
       all = Hash.new(0)
