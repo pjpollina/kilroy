@@ -109,15 +109,13 @@ module Status
     return message.chomp + '```'
   end
 
-  def command_response(event, mysql)
-    return unless Status.valid_command?(event, "Unknown command #{event.content}")
-    command = event.content.split(' ')
-    if(Status.valid_args?(command))
-      mysql.execute(Status.getter_statement(command), Status.getter_args(command)) do |results|
-        event.respond(Status.response(results, command))
-      end
-    else
-      event.respond("Missing or unrecognized qualifier for command \"#{command[0][1..-1]}\"")
+  def command_response(content, mysql)
+    command, response = content.split(' '), ""
+    return "Unknown command #{event.content}" unless Status.valid_command?(command[0])
+    return "Missing or unrecognized arguments for command `#{command[0]}`" unless Status.valid_args?(command)
+    mysql.execute(Status.getter_statement(command), Status.getter_args(command)) do |results|
+      response = Status.response(results, command)
     end
+    return response
   end
 end
