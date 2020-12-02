@@ -67,10 +67,8 @@ module Status
     return args
   end
 
-  def valid_command?(event, invalid_response)
-    valid = event.content.match?(/\A~(totals|hills|roundoff) (.*)/)
-    event.respond invalid_response unless valid
-    return valid
+  def valid_command?(command)
+    command.match?(/\A~(totals|hills|roundoff)/)
   end
 
   def valid_args?(command)
