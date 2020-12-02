@@ -111,10 +111,10 @@ module Status
 
   def command_response(content, mysql)
     command, response = content.split(' '), ""
-    return "Unknown command #{event.content}" unless Status.valid_command?(command[0])
-    return "Missing or unrecognized arguments for command `#{command[0]}`" unless Status.valid_args?(command)
-    mysql.execute(Status.getter_statement(command), Status.getter_args(command)) do |results|
-      response = Status.response(results, command)
+    return "Unknown command #{event.content}" unless valid_command?(command[0])
+    return "Missing or unrecognized arguments for command `#{command[0]}`" unless valid_args?(command)
+    mysql.execute(getter_statement(command), getter_args(command)) do |results|
+      response = response(results, command)
     end
     return response
   end
