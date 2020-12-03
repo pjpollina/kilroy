@@ -109,7 +109,7 @@ module Status
     return message.chomp + '```'
   end
 
-  def command_response(content, mysql)
+  def response(content, mysql)
     command, response = content.split(' '), ""
     return "Unknown command #{event.content}" unless valid_command?(command[0])
     return "Missing or unrecognized arguments for command `#{command[0]}`" unless valid_args?(command)

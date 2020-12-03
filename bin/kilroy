@@ -25,7 +25,7 @@ kilroy.message(in: '#cardio') do |event|
 end
 
 kilroy.message(in: '#status') do |event|
-  response = Status.command_response(event.content, mysql)
+  response = Status.response(event.content, mysql)
   event.respond(response) unless response.empty?
 end
 
