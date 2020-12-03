@@ -48,7 +48,7 @@ module Status
   def row(total)
     row = "#{total[total.keys.first].to_s.ljust(4)}\t"
     row << "#{total[:minutes].to_i.to_s.rjust(5)}\t"
-    row << "#{("%.3f" % total[:distance].round(3)).rjust(7)}\r\n"
+    row << "#{("%.3f" % total[:distance].round(3)).rjust(7)}\n"
     return row
   end
 
@@ -74,14 +74,14 @@ module Status
   end
 
   def header(command)
-    header = '```'
+    header = "```\n"
     if((command[-1].to_i != 0) && command.count > 2)
       header << "#{command[1].capitalize} #{command[0][1..-1]} (-#{command[-1].to_i.abs})"
     else
       header << command[-1].capitalize
       command.reverse[1..-1].each {|c| header << " #{c.gsub('~', '')}"}
     end
-    return header + ":\r\n"
+    return header + ":\n"
   end
 
   def run_data(data, command)
@@ -94,7 +94,7 @@ module Status
     when "~roundoff"
       message << table(data, false) {|total| round_off(total)}
     end
-    return message.chomp + '```'
+    return message + "```"
   end
 
   def response(content, mysql)
