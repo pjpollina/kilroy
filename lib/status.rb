@@ -75,14 +75,6 @@ module Status
     end
   end
 
-  def valid_command?(command)
-    command.match?(/\A~(totals|hills|roundoff)/)
-  end
-
-  def valid_args?(command)
-    (command.count > 1 && ['month', 'semester', 'year'].include?(command[1]))
-  end
-
   def header(command)
     header = '```'
     if((command[-1].to_i != 0) && command.count > 2)
@@ -113,8 +105,8 @@ module Status
 
   def response(content, mysql)
     command, response = content.split(' '), ""
-    return "Unknown command #{event.content}" unless valid_command?(command[0])
-    return "Missing or unrecognized arguments for command `#{command[0]}`" unless valid_args?(command)
+    return "Unknown command #{event.content}" unless command[0].match?(/\A~(totals|hills|roundoff)/)
+    return "Missing or unrecognized arguments for command `#{command[0]}`" unless ['month', 'semester', 'year'].include?(command[1])
     mysql.execute(getter_statement(command), getter_args(command)) do |results|
       response = run_data(results, command)
     end
