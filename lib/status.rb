@@ -91,9 +91,12 @@ module Status
       message << table(data, false)
     when "~roundoff"
       message << table(data, false) do |total, main_key|
-        next if(total[:distance].to_f % 1 == 0)
-        rtime, rdistance = round_off(total[:cd_mph].to_f, total[:minutes].to_i)
-        "#{total[:cd_mph]}mph:  #{rtime} minutes to reach #{rdistance}\n"
+        if(total[:distance].to_f % 1 == 0)
+          ""
+        else
+          rtime, rdistance = round_off(total[:cd_mph].to_f, total[:minutes].to_i)
+          "#{total[:cd_mph]}mph:  #{rtime} minutes to reach #{rdistance}\n"
+        end
       end
     end
     return message.chomp + '```'
