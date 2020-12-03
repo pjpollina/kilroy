@@ -50,6 +50,17 @@ module Status
     return row
   end
 
+  def table(data, main_key, do_all=true)
+    table, all = "", Hash.new(0)
+    data.each do |total|
+      table << ((block_given?) ? yield(total, main_key) : row(total, main_key))
+      total.keys.each {|key| all[key] += total[key]}
+    end
+    all[:cd_mph] = "ALL"
+    table << row(all, :cd_mph) if do_all
+    return table
+  end
+
   def getter_statement(command)
     STMT_BUILDER.build(prime: command[0], cond: command[1])
   end
@@ -92,20 +103,14 @@ module Status
     message = header(command)
     case command[0]
     when "~totals"
-      all = Hash.new(0)
-      data.each do |total|
-        message << row(total, :cd_mph)
-        total.keys.each {|key| all[key] += total[key]}
-      end
-      all[:cd_mph] = "ALL"
-      message << row(all, :cd_mph)
+      message << table(data, :cd_mph)
     when "~hills"
-      data.each{|total| message << row(total, :cd_incline)}
+      message << table(data, :cd_incline, false)
     when "~roundoff"
-      data.each do |total|
+      message << table(data, :cd_incline, false) do |total, main_key|
         next if(total[:distance].to_f % 1 == 0)
         rtime, rdistance = round_off(total[:cd_mph].to_f, total[:minutes].to_i)
-        message << "#{total[:cd_mph]}mph:  #{rtime} minutes to reach #{rdistance}\n"
+        "#{total[:cd_mph]}mph:  #{rtime} minutes to reach #{rdistance}\n"
       end
     end
     return message.chomp + '```'
