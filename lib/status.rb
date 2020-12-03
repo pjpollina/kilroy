@@ -1,7 +1,19 @@
 # Functions related to messages in the status channel
 
+require 'lib/statement_builder'
+
 module Status
   extend self
+
+  STMT_BUILDER = StatementBuilder.new(
+    "SELECT :prime, SUM(cd_minutes) AS minutes, SUM(cd_distance) AS distance FROM cardio WHERE :cond GROUP BY :prime ORDER BY :prime",
+    prime: {"~totals" => "cd_mph", "~hills" => "cd_incline", "~roundoff" => "cd_mph"},
+    cond:  {
+      "month"    => 'MONTH(cd_date)=? AND YEAR(cd_date)=?',
+      "semester" => 'MONTH(cd_date) BETWEEN ? AND ? AND YEAR(cd_date)=?',
+      "year"     => 'YEAR(cd_date)=?'
+    }
+  )
 
   def month_args(offset=0)
     month, year = Time.now.month, Time.now.year
@@ -39,17 +51,7 @@ module Status
   end
 
   def getter_statement(command)
-    stmt, grouper = "SELECT cd_mph, SUM(cd_minutes) AS minutes, SUM(cd_distance) AS distance FROM cardio WHERE ", "mph"
-    if(command[0].eql?("~hills"))
-      stmt = stmt.gsub("mph", "incline") + "cd_mph=4.0 AND "
-      grouper = "incline"
-    end
-    case command[1]
-      when 'month'    then stmt += 'MONTH(cd_date)=? AND YEAR(cd_date)=?'
-      when 'semester' then stmt += 'MONTH(cd_date) BETWEEN ? AND ? AND YEAR(cd_date)=?'
-      when 'year'     then stmt += 'YEAR(cd_date)=?'
-    end
-    return stmt += " GROUP BY cd_#{grouper} ORDER BY cd_#{grouper}"
+    STMT_BUILDER.build(prime: command[0], cond: command[1])
   end
 
   def getter_args(command)
