@@ -43,21 +43,21 @@ module Status
     return roundtime, rounddistance
   end
 
-  def row(total, main_key)
-    row = "#{total[main_key].to_s.ljust(4)}\t"
+  def row(total)
+    row = "#{total[total.keys.first].to_s.ljust(4)}\t"
     row << "#{total[:minutes].to_i.to_s.rjust(5)}\t"
     row << "#{("%.3f" % total[:distance].round(3)).rjust(7)}\r\n"
     return row
   end
 
-  def table(data, main_key, do_all=true)
+  def table(data, do_all=true)
     table, all = "", Hash.new(0)
     data.each do |total|
-      table << ((block_given?) ? yield(total, main_key) : row(total, main_key))
+      table << ((block_given?) ? yield(total) : row(total))
       total.keys.each {|key| all[key] += total[key]}
     end
     all[:cd_mph] = "ALL"
-    table << row(all, :cd_mph) if do_all
+    table << row(all) if do_all
     return table
   end
 
@@ -86,11 +86,11 @@ module Status
     message = header(command)
     case command[0]
     when "~totals"
-      message << table(data, :cd_mph)
+      message << table(data)
     when "~hills"
-      message << table(data, :cd_incline, false)
+      message << table(data, false)
     when "~roundoff"
-      message << table(data, :cd_incline, false) do |total, main_key|
+      message << table(data, false) do |total, main_key|
         next if(total[:distance].to_f % 1 == 0)
         rtime, rdistance = round_off(total[:cd_mph].to_f, total[:minutes].to_i)
         "#{total[:cd_mph]}mph:  #{rtime} minutes to reach #{rdistance}\n"
