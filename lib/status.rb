@@ -33,14 +33,16 @@ module Status
     return sem, sem + 5, year
   end
 
-  def round_off(speed, time)
+  def round_off(total)
+    return "" if (total[:distance].to_f % 1 == 0)
+    speed, time = total[:cd_mph].to_f, total[:minutes].to_i
     roundtime = 30 - (time % 30)
     rounddistance = (speed / 60) * (time + roundtime)
     until(rounddistance % 1 == 0)
       roundtime += 30
       rounddistance = (speed / 60) * (time + roundtime)
     end
-    return roundtime, rounddistance
+    return "#{speed}mph:  #{roundtime} minutes to reach #{rounddistance}\n"
   end
 
   def row(total)
@@ -90,14 +92,7 @@ module Status
     when "~hills"
       message << table(data, false)
     when "~roundoff"
-      message << table(data, false) do |total, main_key|
-        if(total[:distance].to_f % 1 == 0)
-          ""
-        else
-          rtime, rdistance = round_off(total[:cd_mph].to_f, total[:minutes].to_i)
-          "#{total[:cd_mph]}mph:  #{rtime} minutes to reach #{rdistance}\n"
-        end
-      end
+      message << table(data, false) {|total| round_off(total)}
     end
     return message.chomp + '```'
   end
