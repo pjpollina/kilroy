@@ -66,18 +66,13 @@ module Status
   end
 
   def getter_args(command)
-    args = []
-    offset = 0
-    if(command.count > 2)
-      offset = command[2].to_i.abs
-      offset += 1 if command[2].eql?("last")
-    end
+    offset = command[2].to_i.abs + (command[2].eql?("last") ? 1 : 0)
     case command[1]
-      when 'month'    then args = month_args(offset)
-      when 'semester' then args = semester_args(offset)
-      when 'year'     then args = [Time.now.year - offset]
+      when 'month'    then return month_args(offset)
+      when 'semester' then return semester_args(offset)
+      when 'year'     then return [Time.now.year - offset]
+      else return []
     end
-    return args
   end
 
   def valid_command?(command)
