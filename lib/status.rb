@@ -61,10 +61,6 @@ module Status
     return table
   end
 
-  def getter_statement(command)
-    STMT_BUILDER.build(prime: command[0], cond: command[1])
-  end
-
   def getter_args(command)
     offset = command[2].to_i.abs + (command[2].eql?("last") ? 1 : 0)
     case command[1]
@@ -107,7 +103,7 @@ module Status
     command, response = content.split(' '), ""
     return "Unknown command #{event.content}" unless command[0].match?(/\A~(totals|hills|roundoff)/)
     return "Missing or unrecognized arguments for command `#{command[0]}`" unless ['month', 'semester', 'year'].include?(command[1])
-    mysql.execute(getter_statement(command), getter_args(command)) do |results|
+    mysql.execute(STMT_BUILDER.build(prime: command[0], cond: command[1]), getter_args(command)) do |results|
       response = run_data(results, command)
     end
     return response
