@@ -6,7 +6,7 @@ module Status
   extend self
 
   STMT_BUILDER = StatementBuilder.new(
-    "SELECT :prime, SUM(cd_minutes) AS minutes, SUM(cd_distance) AS distance FROM cardio WHERE :cond GROUP BY :prime ORDER BY :prime",
+    "SELECT :prime AS prime, SUM(cd_minutes) AS minutes, SUM(cd_distance) AS distance FROM cardio WHERE :cond GROUP BY prime ORDER BY prime",
     prime: {"~totals" => "cd_mph", "~hills" => "cd_incline", "~roundoff" => "cd_mph"},
     cond:  {
       "month"    => 'MONTH(cd_date)=? AND YEAR(cd_date)=?',
@@ -46,7 +46,7 @@ module Status
   end
 
   def row(total)
-    row = "#{total[total.keys.first].to_s.ljust(4)}\t"
+    row = "#{total[:prime].to_s.ljust(4)}\t"
     row << "#{total[:minutes].to_i.to_s.rjust(5)}\t"
     row << "#{("%.3f" % total[:distance].round(3)).rjust(7)}\n"
     return row
@@ -58,7 +58,7 @@ module Status
       table << ((block_given?) ? yield(total) : row(total))
       total.keys.each {|key| all[key] += total[key]}
     end
-    all[:cd_mph] = "ALL"
+    all[:prime] = "ALL"
     table << row(all) if do_all
     return table
   end
