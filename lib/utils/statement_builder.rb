@@ -3,7 +3,7 @@
 class StatementBuilder
   def initialize(base, fillins={})
     @base    = base
-    @fillins = fillins
+    @fillins = fillins.each_value {|v| v.default = ""}
     unless(validate)
       raise ArgumentError.new("StatementBuilder fillins don't match params")
     end
