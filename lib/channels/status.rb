@@ -6,8 +6,9 @@ module Status
   extend self
 
   GET_TOTALS = StatementBuilder.new(
-    "SELECT :prime AS prime, SUM(cd_minutes) AS minutes, SUM(cd_distance) AS distance FROM cardio WHERE :cond GROUP BY prime ORDER BY prime",
+    "SELECT :prime AS prime, SUM(cd_minutes) AS minutes, SUM(cd_distance) AS distance FROM cardio WHERE :ms :cond GROUP BY prime ORDER BY prime",
     prime: {"~totals" => "cd_mph", "~hills" => "cd_incline", "~roundoff" => "cd_mph"},
+    ms:    {"~hills" => 'cd_mph=4.0 AND'},
     cond:  {
       "month"    => 'MONTH(cd_date)=? AND YEAR(cd_date)=?',
       "semester" => 'MONTH(cd_date) BETWEEN ? AND ? AND YEAR(cd_date)=?',
@@ -101,7 +102,7 @@ module Status
     command, response = content.split(' '), ""
     return "Unknown command #{event.content}" unless command[0].match?(/\A~(totals|hills|roundoff)/)
     return "Missing or unrecognized arguments for command `#{command[0]}`" unless ['month', 'semester', 'year'].include?(command[1])
-    mysql.execute(GET_TOTALS.build(prime: command[0], cond: command[1]), getter_args(command)) do |results|
+    mysql.execute(GET_TOTALS.build(prime: command[0], ms: command[0], cond: command[1]), getter_args(command)) do |results|
       response = run_data(results, command)
     end
     return response
