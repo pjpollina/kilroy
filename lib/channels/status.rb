@@ -35,7 +35,7 @@ module Status
 
   def round_off(total)
     return "" if (total[:distance].to_f % 1 == 0)
-    speed, time = total[:cd_mph].to_f, total[:minutes].to_i
+    speed, time = total[:prime].to_f, total[:minutes].to_i
     roundtime = 30 - (time % 30)
     rounddistance = (speed / 60) * (time + roundtime)
     until(rounddistance % 1 == 0)
