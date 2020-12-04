@@ -1,6 +1,6 @@
 # Functions related to messages in the status channel
 
-require 'lib/statement_builder'
+require 'lib/utils/statement_builder'
 
 module Status
   extend self

@@ -4,11 +4,11 @@ $LOAD_PATH << File.expand_path(File.dirname(__FILE__)).chomp('/bin')
 
 require 'dotenv/load'
 require 'discordrb'
-require 'lib/mysql'
-require 'lib/backup'
-require 'lib/status'
-require 'lib/cardio'
-require 'lib/tweeter'
+require 'lib/utils/backup'
+require 'lib/clients/mysql'
+require 'lib/clients/tweeter'
+require 'lib/channels/status'
+require 'lib/channels/cardio'
 
 mysql = MySQL.new('kilroy', ENV['discord_bot_token'], 'fitness', ENV['sql_host'] || 'localhost')
 
