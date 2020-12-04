@@ -5,7 +5,7 @@ require 'lib/statement_builder'
 module Status
   extend self
 
-  STMT_BUILDER = StatementBuilder.new(
+  GET_TOTALS = StatementBuilder.new(
     "SELECT :prime AS prime, SUM(cd_minutes) AS minutes, SUM(cd_distance) AS distance FROM cardio WHERE :cond GROUP BY prime ORDER BY prime",
     prime: {"~totals" => "cd_mph", "~hills" => "cd_incline", "~roundoff" => "cd_mph"},
     cond:  {
@@ -101,7 +101,7 @@ module Status
     command, response = content.split(' '), ""
     return "Unknown command #{event.content}" unless command[0].match?(/\A~(totals|hills|roundoff)/)
     return "Missing or unrecognized arguments for command `#{command[0]}`" unless ['month', 'semester', 'year'].include?(command[1])
-    mysql.execute(STMT_BUILDER.build(prime: command[0], cond: command[1]), getter_args(command)) do |results|
+    mysql.execute(GET_TOTALS.build(prime: command[0], cond: command[1]), getter_args(command)) do |results|
       response = run_data(results, command)
     end
     return response
