@@ -4,28 +4,26 @@ $LOAD_PATH << File.expand_path(File.dirname(__FILE__)).chomp('/bin')
 
 require 'dotenv/load'
 require 'discordrb'
+require 'lib/kilroy'
 require 'lib/utils/backup'
 require 'lib/clients/mysql'
 require 'lib/clients/tweeter'
 require 'lib/channels/status'
 require 'lib/channels/cardio'
 
-mysql = MySQL.new('kilroy', ENV['discord_bot_token'], 'fitness', ENV['sql_host'] || 'localhost')
-
-tweeter = Tweeter.new
-
-kilroy = Discordrb::Bot.new(
-  token:      ENV['discord_bot_token'],
-  client_id:  ENV['discord_bot_id']
+kilroy = Kilroy.new(
+  mysql:   MySQL.new('kilroy', ENV['discord_bot_token'], 'fitness', ENV['sql_host'] || 'localhost'),
+  discord: Discordrb::Bot.new(token: ENV['discord_bot_token'], client_id:  ENV['discord_bot_id']),
+  tweeter: Tweeter.new
 )
 
 kilroy.message(in: '#cardio') do |event|
-  response = Cardio.insert(event.content, mysql)
+  response = Cardio.insert(event.content, kilroy.mysql)
   event.respond(response) unless response.empty?
 end
 
 kilroy.message(in: '#status') do |event|
-  response = Status.response(event.content, mysql)
+  response = Status.response(event.content, kilroy.mysql)
   event.respond(response) unless response.empty?
 end
 
