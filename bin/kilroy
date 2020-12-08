@@ -18,8 +18,9 @@ kilroy = Kilroy.new(
 )
 
 kilroy.message(in: '#cardio') do |event|
-  response = Cardio.insert(event.content, kilroy.mysql)
-  event.respond(response) unless response.empty?
+  response, error = Cardio.insert(event.content, kilroy.mysql)
+  event.respond(response) if error
+  puts "#{"Error in #cardio: " if error}#{response}"
 end
 
 kilroy.message(in: '#status') do |event|

@@ -29,10 +29,9 @@ module Cardio
   end
 
   def insert(command, mysql)
-    return "Unrecognized cardio format" unless valid?(command)
+    return "Unrecognized cardio format", true unless valid?(command)
     mysql.execute(statement(command), argparse(command))
     Backup.write(*command.split(', '))
-    puts "Run logged: #{command}"
-    return ""
+    return "Run logged: #{command}", false
   end
 end
