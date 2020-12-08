@@ -105,6 +105,6 @@ module Status
     mysql.execute(GET_TOTALS.build(prime: command[0], ms: command[0], cond: command[1]), getter_args(command)) do |results|
       response = run_data(results, command)
     end
-    return response
+    return response, "Command issued: #{content}"
   end
 end

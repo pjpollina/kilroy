@@ -24,8 +24,9 @@ kilroy.message(in: '#cardio') do |event|
 end
 
 kilroy.message(in: '#status') do |event|
-  response = Status.response(event.content, kilroy.mysql)
+  response, log = Status.response(event.content, kilroy.mysql)
   event.respond(response) unless response.empty?
+  puts ((log.nil?) ? "Command error: #{response}" : log)
 end
 
 kilroy.message(in: '#general') do |event|
