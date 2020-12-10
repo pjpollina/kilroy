@@ -39,6 +39,13 @@ module Backup
     end
   end
 
+  def s3_sync
+    bucket, root = ENV['s3_backup_dir'].split('/')
+    File.open(Backup.filepath, 'r') do |file|
+      s3_client.put_object(bucket: bucket, key: root + Backup.filepath(""), body: file)
+    end
+  end
+
   private
 
   def s3_client
