@@ -1,5 +1,7 @@
 # Functions related to backing up queries to an SQL file
 
+require 'aws-sdk-s3'
+
 module Backup
   extend self
 
@@ -35,5 +37,15 @@ module Backup
       end
       file.puts query(mph, minutes, incline)
     end
+  end
+
+  private
+
+  def s3_client
+    Aws::S3::Client.new(
+      access_key_id: ENV['s3_access_id'],
+      secret_access_key: ENV['s3_access_secret'],
+      region: ENV['s3_region']
+    )
   end
 end
