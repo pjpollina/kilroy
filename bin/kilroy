@@ -32,6 +32,9 @@ end
 kilroy.message(in: '#general') do |event|
   if(event.content.eql?('tweet'))
     event.respond(tweeter.day_totals(mysql))
+  elsif(event.content.eql?('sync s3'))
+    Backup.s3_sync
+    puts 's3 synced'
   end
 end
 
