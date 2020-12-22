@@ -1,0 +1,30 @@
+#!/usr/bin/env ruby
+
+$LOAD_PATH << File.expand_path(File.dirname(__FILE__)).chomp('/bin')
+
+require 'time'
+require 'dotenv/load'
+require 'lib/utils/backup'
+require 'lib/channels/cardio'
+
+run = ""
+print "Enter run stats: "
+loop do
+  run = gets.chomp
+  break if Cardio.valid?(run)
+  print "Invalid format, try again: "
+end
+
+print "Enter date (leave blank for today): "
+date = Time.parse(gets.chomp.gsub('*', Time.now.strftime('%Y-%m-'))) rescue Time.now
+
+query = Backup.query(*run.split(', ')).gsub(/\('.*'/, date.strftime("('%F'"))
+
+File.open(Backup.filepath, 'a+') do |file|
+  unless(file.readlines.include?(Backup.header(Time.now.month, Time.now.day)))
+    file.puts Backup.header(Time.now.month, Time.now.day)
+  end
+  file.puts query
+end
+
+puts "Added #{query.squeeze} to #{Backup.filepath}"
