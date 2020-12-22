@@ -5,7 +5,10 @@ $LOAD_PATH << File.expand_path(File.dirname(__FILE__)).chomp('/bin')
 require 'time'
 require 'dotenv/load'
 require 'lib/utils/backup'
+require 'lib/clients/mysql'
 require 'lib/channels/cardio'
+
+mysql = MySQL.new('kilroy', ENV['discord_bot_token'], 'fitness', ENV['sql_host'] || 'localhost')
 
 run = ""
 print "Enter run stats: "
@@ -26,5 +29,7 @@ File.open(Backup.filepath, 'a+') do |file|
   end
   file.puts query
 end
+
+mysql.execute(query.chomp(';'))
 
 puts "Added #{query.squeeze} to #{Backup.filepath}"
