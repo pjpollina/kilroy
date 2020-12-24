@@ -8,7 +8,7 @@ require 'lib/utils/backup'
 require 'lib/clients/mysql'
 require 'lib/channels/cardio'
 
-mysql = MySQL.new('kilroy', ENV['discord_bot_token'], 'fitness', ENV['sql_host'] || 'localhost')
+mysql = MySQL.new
 
 run = ""
 print "Enter run stats: "
