@@ -3,11 +3,11 @@
 require 'mysql2'
 
 class MySQL
-  def initialize(username, password, database, host="localhost")
+  def initialize(username="kilroy", password=ENV['discord_bot_token'], database="fitness", host=ENV['sql_host'])
     @username = username
     @password = password
     @database = database
-    @host     = host
+    @host     = host || "localhost"
   end
 
   def connect
