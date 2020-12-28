@@ -17,15 +17,8 @@ module Status
   )
 
   def month_args(offset=0)
-    month, year = Time.now.month, Time.now.year
-    if(offset != 0)
-      month -= offset
-      until(month > 0)
-        month += 12
-        year -= 1
-      end
-    end
-    return month, year
+    date = (Date.today - (Date.today.day - 1)) << offset
+    return date.month, date.year
   end
 
   def semester_args(offset=0)
