@@ -22,20 +22,20 @@ module Backup
     File.expand_path(Time.now.strftime("#{root}/%Y/%m%B.sql"))
   end
 
-  def query(mph, minutes, incline="")
+  def query(mph, minutes, incline="", date: Time.now)
     query = "INSERT INTO cardio(cd_date, cd_mph, cd_minutes"
     query << ((incline.empty?) ? ")#{" " * 13}" : ", cd_incline) ")
-    query << "VALUES('#{Time.now.strftime("%F")}', #{mph.rjust(4)}, #{minutes.chomp(?m).rjust(2)}"
+    query << "VALUES('#{date.strftime("%F")}', #{mph.rjust(4)}, #{minutes.chomp(?m).rjust(2)}"
     query << ((incline.empty?) ? ");" : ", #{incline.chomp('%')});")
     return query
   end
 
-  def write(mph, minutes, incline="")
+  def write(mph, minutes, incline="", date: Time.now)
     File.open(filepath, 'a+') do |file|
-      unless(file.readlines.include?(header(Time.now.month, Time.now.day)))
-        file.puts header(Time.now.month, Time.now.day)
+      unless(file.readlines.include?(header(date.month, date.day)))
+        file.puts header(date.month, date.day)
       end
-      file.puts query(mph, minutes, incline)
+      file.puts query(mph, minutes, incline, date: date)
     end
   end
 
