@@ -21,15 +21,9 @@ end
 print "Enter date (leave blank for today): "
 date = Time.parse(gets.chomp.gsub('*', Time.now.strftime('%Y-%m-'))) rescue Time.now
 
-query = Backup.query(*run.split(', ')).gsub(/\('.*'/, date.strftime("('%F'"))
+query = Backup.query(*run.split(', '), date: date).chomp(';')
 
-File.open(Backup.filepath, 'a+') do |file|
-  unless(file.readlines.include?(Backup.header(Time.now.month, Time.now.day)))
-    file.puts Backup.header(Time.now.month, Time.now.day)
-  end
-  file.puts query
-end
-
-mysql.execute(query.chomp(';'))
+Backup.write(*run.split(', '), date: date)
+mysql.execute(query)
 
 puts "Added #{query.squeeze} to #{Backup.filepath}"
