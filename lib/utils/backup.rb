@@ -31,6 +31,7 @@ module Backup
   end
 
   def write(mph, minutes, incline="", date: Time.now)
+    Dir.mkdir(File.dirname(filepath)) unless Dir.exist?(File.dirname(filepath))
     File.open(filepath, 'a+') do |file|
       unless(file.readlines.include?(header(date.month, date.day)))
         file.puts header(date.month, date.day)
