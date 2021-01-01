@@ -17,7 +17,15 @@ kilroy = Kilroy.new(
   tweeter: Tweeter.new
 )
 
+runcache = []
+runspaused = false
+
 kilroy.message(in: '#cardio') do |event|
+  if(runspaused)
+    puts "#{event.content} added to cache"
+    runcache << event.content
+    next
+  end
   response, error = Cardio.insert(event.content, kilroy.mysql)
   event.respond(response) if error
   puts "#{"Error in #cardio: " if error}#{response}"
@@ -36,6 +44,29 @@ kilroy.message(in: '#general') do |event|
     Backup.s3_sync
     puts 's3 synced'
   end
+end
+
+kilroy.message(in: '#functions') do |event|
+  reply = ""
+  case event.content
+  when 'pause'
+    runspaused = true
+    reply = "paused"
+  when 'unpause'
+    runspaused = false
+    reply = "unpaused"
+    runcache.each do |run|
+      response, error = Cardio.insert(run, kilroy.mysql)
+      reply << "\n#{response}" if error
+      puts "#{"Error in #cardio: " if error}#{response}"
+    end
+    runcache = []
+  when 'show'
+    reply = "```Cached runs:\n" + runcache.join("\n") + "```"
+  when 'undo'
+    reply = "Removed #{runcache.pop} from cache"
+  end
+  event.respond(reply) unless reply.empty?
 end
 
 kilroy.run
