@@ -51,13 +51,13 @@ kilroy.message(in: '#functions') do |event|
   case event.content
   when 'pause'
     runspaused = true
-    reply = "paused"
+    event.message.react("\u{1F44D}")
   when 'unpause'
     runspaused = false
-    reply = "unpaused"
+    event.message.react("\u{1F44D}")
     runcache.each do |run|
       response, error = Cardio.insert(run, kilroy.mysql)
-      reply << "\n#{response}" if error
+      reply << "#{response}\n" if error
       puts "#{"Error in #cardio: " if error}#{response}"
     end
     runcache = []
