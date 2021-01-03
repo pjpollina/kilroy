@@ -14,6 +14,10 @@ module Status
     }
   )
 
+  def query(command)
+    "CALL #{command[1].upcase}_RUNS(#{getter_args(command).join(", ")})"
+  end
+
   def month_args(offset=0)
     date = (Date.today - (Date.today.day - 1)) << offset
     return date.month, date.year
@@ -91,7 +95,7 @@ module Status
     command, response = content.split(' '), ""
     return "Unknown command #{content}" unless command[0].match?(/\A~(totals|roundoff)/)
     return "Missing or unrecognized arguments for command `#{command[0]}`" unless ['month', 'semester', 'year'].include?(command[1])
-    mysql.execute(GET_TOTALS.build(speed: command[0], ms: command[0], cond: command[1]), getter_args(command)) do |results|
+    mysql.execute(query(command)) do |results|
       response = run_data(results, command)
     end
     return response, "Command issued: #{content}"
