@@ -6,9 +6,7 @@ module Status
   extend self
 
   GET_TOTALS = StatementBuilder.new(
-    "SELECT :prime AS prime, SUM(cd_minutes) AS minutes, SUM(cd_distance) AS distance FROM cardio WHERE :ms :cond GROUP BY prime ORDER BY prime",
-    prime: {"~totals" => "cd_mph", "~hills" => "cd_incline", "~roundoff" => "cd_mph"},
-    ms:    {"~hills" => 'cd_mph=4.0 AND'},
+    "SELECT cd_mph AS speed, SUM(cd_minutes) AS minutes, SUM(cd_distance) AS distance FROM cardio WHERE :cond GROUP BY speed ORDER BY speed",
     cond:  {
       "month"    => 'MONTH(cd_date)=?    AND YEAR(cd_date)=?',
       "semester" => 'SEMESTER(cd_date)=? AND YEAR(cd_date)=?',
@@ -29,7 +27,7 @@ module Status
 
   def round_off(total)
     return "" if (total[:distance].to_f % 1 == 0)
-    speed, time = total[:prime].to_f, total[:minutes].to_i
+    speed, time = total[:speed].to_f, total[:minutes].to_i
     roundtime = 30 - (time % 30)
     rounddistance = (speed / 60) * (time + roundtime)
     until(rounddistance % 1 == 0)
@@ -40,7 +38,7 @@ module Status
   end
 
   def row(total)
-    row = "#{total[:prime].to_s.ljust(4)}\t"
+    row = "#{total[:speed].to_s.ljust(4)}\t"
     row << "#{total[:minutes].to_i.to_s.rjust(5)}\t"
     row << "#{("%.3f" % total[:distance].round(3)).rjust(7)}\n"
     return row
@@ -52,7 +50,7 @@ module Status
       table << ((block_given?) ? yield(total) : row(total))
       total.keys.each {|key| all[key] += total[key]}
     end
-    all[:prime] = "ALL"
+    all[:speed] = "ALL"
     table << row(all) if do_all
     return table
   end
@@ -83,8 +81,6 @@ module Status
     case command[0]
     when "~totals"
       message << table(data)
-    when "~hills"
-      message << table(data, false)
     when "~roundoff"
       message << table(data, false) {|total| round_off(total)}
     end
@@ -93,9 +89,9 @@ module Status
 
   def response(content, mysql)
     command, response = content.split(' '), ""
-    return "Unknown command #{content}" unless command[0].match?(/\A~(totals|hills|roundoff)/)
+    return "Unknown command #{content}" unless command[0].match?(/\A~(totals|roundoff)/)
     return "Missing or unrecognized arguments for command `#{command[0]}`" unless ['month', 'semester', 'year'].include?(command[1])
-    mysql.execute(GET_TOTALS.build(prime: command[0], ms: command[0], cond: command[1]), getter_args(command)) do |results|
+    mysql.execute(GET_TOTALS.build(speed: command[0], ms: command[0], cond: command[1]), getter_args(command)) do |results|
       response = run_data(results, command)
     end
     return response, "Command issued: #{content}"
