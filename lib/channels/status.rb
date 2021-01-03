@@ -4,7 +4,17 @@ module Status
   extend self
 
   def query(command)
-    "CALL #{command[1].upcase}_RUNS(#{getter_args(command).join(", ")})"
+    "CALL #{command[1].upcase}_RUNS(#{args(command).join(", ")})"
+  end
+
+  def args(command)
+    offset = command[2].to_i.abs + (command[2].eql?("last") ? 1 : 0)
+    case command[1]
+      when 'month'    then return month_args(offset)
+      when 'semester' then return semester_args(offset)
+      when 'year'     then return [Time.now.year - offset]
+      else return []
+    end
   end
 
   def month_args(offset=0)
@@ -46,16 +56,6 @@ module Status
     all[:speed] = "ALL"
     table << row(all) if do_all
     return table
-  end
-
-  def getter_args(command)
-    offset = command[2].to_i.abs + (command[2].eql?("last") ? 1 : 0)
-    case command[1]
-      when 'month'    then return month_args(offset)
-      when 'semester' then return semester_args(offset)
-      when 'year'     then return [Time.now.year - offset]
-      else return []
-    end
   end
 
   def header(command)
