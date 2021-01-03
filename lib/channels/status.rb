@@ -1,18 +1,7 @@
 # Functions related to messages in the status channel
 
-require 'lib/utils/statement_builder'
-
 module Status
   extend self
-
-  GET_TOTALS = StatementBuilder.new(
-    "SELECT cd_mph AS speed, SUM(cd_minutes) AS minutes, SUM(cd_distance) AS distance FROM cardio WHERE :cond GROUP BY speed ORDER BY speed",
-    cond:  {
-      "month"    => 'MONTH(cd_date)=?    AND YEAR(cd_date)=?',
-      "semester" => 'SEMESTER(cd_date)=? AND YEAR(cd_date)=?',
-      "year"     => 'YEAR(cd_date)=?'
-    }
-  )
 
   def query(command)
     "CALL #{command[1].upcase}_RUNS(#{getter_args(command).join(", ")})"
