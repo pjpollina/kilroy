@@ -10,8 +10,8 @@ module Status
     prime: {"~totals" => "cd_mph", "~hills" => "cd_incline", "~roundoff" => "cd_mph"},
     ms:    {"~hills" => 'cd_mph=4.0 AND'},
     cond:  {
-      "month"    => 'MONTH(cd_date)=? AND YEAR(cd_date)=?',
-      "semester" => 'MONTH(cd_date) BETWEEN ? AND ? AND YEAR(cd_date)=?',
+      "month"    => 'MONTH(cd_date)=?    AND YEAR(cd_date)=?',
+      "semester" => 'SEMESTER(cd_date)=? AND YEAR(cd_date)=?',
       "year"     => 'YEAR(cd_date)=?'
     }
   )
@@ -24,7 +24,7 @@ module Status
   def semester_args(offset=0)
     month = Time.now.month - ((Time.now.month < 7) ? 1 : 7)
     sem, year = month_args(month + (offset * 6))
-    return sem, sem + 5, year
+    return ((sem == 1) ? 1 : 2), year
   end
 
   def round_off(total)
