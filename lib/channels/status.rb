@@ -1,5 +1,7 @@
 # Functions related to messages in the status channel
 
+require 'lib/utils/time'
+
 module Status
   extend self
 
@@ -10,8 +12,8 @@ module Status
   def args(command)
     offset = command[2].to_i.abs + (command[2].eql?("last") ? 1 : 0)
     case command[1]
-      when 'month'    then return month_args(offset)
-      when 'semester' then return semester_args(offset)
+      when 'month'    then return Time.now.months_ago(offset)
+      when 'semester' then return Time.now.semesters_ago(offset)
       when 'year'     then return [Time.now.year - offset]
       else return []
     end
