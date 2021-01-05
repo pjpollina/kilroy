@@ -47,17 +47,6 @@ module Status
     return row
   end
 
-  def table(data, do_all=true)
-    table, all = "", Hash.new(0)
-    data.each do |total|
-      table << ((block_given?) ? yield(total) : row(total))
-      total.keys.each {|key| all[key] += total[key]}
-    end
-    all[:speed] = "ALL"
-    table << row(all) if do_all
-    return table
-  end
-
   def header(command)
     header = "```\n"
     if((command[-1].to_i != 0) && command.count > 2)
