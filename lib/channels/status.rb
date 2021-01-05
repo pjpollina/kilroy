@@ -19,17 +19,6 @@ module Status
     end
   end
 
-  def month_args(offset=0)
-    date = (Date.today - (Date.today.day - 1)) << offset
-    return date.month, date.year
-  end
-
-  def semester_args(offset=0)
-    month = Time.now.month - ((Time.now.month < 7) ? 1 : 7)
-    sem, year = month_args(month + (offset * 6))
-    return ((sem == 1) ? 1 : 2), year
-  end
-
   def round_off(total)
     return "" if (total[:distance].to_f % 1 == 0)
     speed, time = total[:speed].to_f, total[:minutes].to_i
