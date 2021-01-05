@@ -62,13 +62,7 @@ module Status
     message = header(command)
     case command[0]
     when "~totals"
-      all = Hash.new(0)
-      data.each do |total|
-        total.keys.each {|key| all[key] += total[key]}
-        message << row(total)
-      end
-      all[:speed] = "ALL"
-      message << row(all)
+      message << data.collect {|total| row(total)}.join
     when "~roundoff"
       message << data.collect {|total| round_off(total)}.join
     end
