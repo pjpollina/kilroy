@@ -12,21 +12,24 @@ END#
 CREATE PROCEDURE MONTH_RUNS(month INTEGER, year INTEGER)
 BEGIN
   SELECT cd_mph AS speed, SUM(cd_minutes) AS minutes, SUM(cd_distance) AS distance
-  FROM cardio WHERE MONTH(cd_date)=month AND YEAR(cd_date)=year
-  GROUP BY speed ORDER BY speed;
+  FROM cardio WHERE MONTH(cd_date)=month AND YEAR(cd_date)=year GROUP BY speed UNION ALL
+  SELECT "ALL" AS speed, SUM(cd_minutes) AS minutes, SUM(cd_distance) AS distance
+  FROM cardio WHERE MONTH(cd_date)=month AND YEAR(cd_date)=year ORDER BY speed;
 END #
 
 CREATE PROCEDURE SEMESTER_RUNS(semester INTEGER, year INTEGER)
 BEGIN
   SELECT cd_mph AS speed, SUM(cd_minutes) AS minutes, SUM(cd_distance) AS distance
-  FROM cardio WHERE SEMESTER(cd_date)=semester AND YEAR(cd_date)=year
-  GROUP BY speed ORDER BY speed;
+  FROM cardio WHERE SEMESTER(cd_date)=semester AND YEAR(cd_date)=year GROUP BY speed UNION ALL
+  SELECT "ALL" AS speed, SUM(cd_minutes) AS minutes, SUM(cd_distance) AS distance
+  FROM cardio WHERE SEMESTER(cd_date)=semester AND YEAR(cd_date)=year ORDER BY speed;
 END #
 
 CREATE PROCEDURE YEAR_RUNS(year INTEGER)
 BEGIN
   SELECT cd_mph AS speed, SUM(cd_minutes) AS minutes, SUM(cd_distance) AS distance
-  FROM cardio WHERE YEAR(cd_date)=year
-  GROUP BY speed ORDER BY speed;
+  FROM cardio WHERE YEAR(cd_date)=year GROUP BY speed UNION ALL
+  SELECT "ALL" AS speed, SUM(cd_minutes) AS minutes, SUM(cd_distance) AS distance
+  FROM cardio WHERE YEAR(cd_date)=year ORDER BY speed;
 END #
 DELIMITER ;
