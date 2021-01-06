@@ -5,10 +5,12 @@ require 'lib/utils/time'
 module Status
   extend self
 
+  # Returns the appropriate SQL query for the given command
   def query(command)
     "CALL #{command[1].upcase}_RUNS(#{args(command).join(", ")})"
   end
 
+  # Returns the proper SQL args for the given command
   def args(command)
     offset = command[2].to_i.abs + (command[2].eql?("last") ? 1 : 0)
     case command[1]
@@ -19,6 +21,7 @@ module Status
     end
   end
 
+  # Returns the results for the roundoff command for the given row
   def round_off(total)
     return "" if (total[:distance].to_f % 1 == 0)
     speed, time = total[:speed].to_f, total[:minutes].to_i
@@ -31,6 +34,7 @@ module Status
     return "#{speed}mph:  #{roundtime} minutes to reach #{rounddistance}\n"
   end
 
+  # Returns a formatted string of the given row for the totals command
   def row(total)
     row = "#{total[:speed].to_s.ljust(4)}\t"
     row << "#{total[:minutes].to_i.to_s.rjust(5)}\t"
@@ -38,6 +42,7 @@ module Status
     return row
   end
 
+  # Returns an appropriate header string for the response to the given command
   def header(command)
     header = "```\n"
     if((command[-1].to_i != 0) && command.count > 2)
@@ -49,6 +54,7 @@ module Status
     return header + ":\n"
   end
 
+  # Returns the formatted response message for the given command using the SQL result data
   def run_data(data, command)
     message = header(command)
     case command[0]
@@ -60,6 +66,7 @@ module Status
     return message + "```"
   end
 
+  # Parses a given command and returns the appropriate response and log string
   def response(content, mysql)
     command, response = content.split(' '), ""
     return "Unknown command #{content}" unless command[0].match?(/\A~(totals|roundoff)/)
