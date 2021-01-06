@@ -21,4 +21,26 @@ class Time
     psem, pyear = psem + 2, pyear - 1 until psem > 0
     return psem, pyear
   end
+
+  # Returns the number of days in the current month for time
+  def month_days
+    case month
+    when 2
+      return (Date.leap?(year)) ? 29 : 28
+    when 4, 6, 9, 11
+      return 30
+    else
+      return 31
+    end
+  end
+
+  # Returns the first day of the week for time
+  def week_start
+    [1, 8, 15, 22, 29].select{|s| s <= day}.max
+  end
+
+  # Returns the final day of the week for time
+  def week_end
+    (week_start < 28) ? week_start + 6 : month_days
+  end
 end
