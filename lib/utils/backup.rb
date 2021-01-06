@@ -10,7 +10,7 @@ module Backup
 
   def header(month, day, year=Time.now.year)
     time = Time.new(year, month, day)
-    time.strftime("-- %b #{[time.week_start, time.week_end].uniq.join("-")}")
+    time.strftime("-- %b #{[time.week_start, time.week_end].uniq.join("-")}\n")
   end
 
   def filepath(root=ROOT)
