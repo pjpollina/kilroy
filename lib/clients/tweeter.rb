@@ -3,8 +3,10 @@
 require 'twitter'
 
 class Tweeter
+  # The footer string for all tweets
   FOOTER = "(via Kilroy)"
 
+  # Creates a new Tweeter object, with a Twitter client using the credentials from .env
   def initialize
     @client = Twitter::REST::Client.new do |config|
       config.consumer_key        = ENV['twitter_api_key']
@@ -14,10 +16,12 @@ class Tweeter
     end
   end
 
+  # Tweets a given message with footer and returns the new tweet's URL
   def tweet(message, footer=FOOTER)
     @client.update("#{message} #{footer}").url
   end
 
+  # Gets today's run stats using mysql, formats them, tweets it, and returns the tweet's URL
   def day_totals(mysql)
     mysql.execute("SELECT * FROM cardio WHERE cd_date=CURDATE()") do |runs|
       minutes, distance, topspeed, topminutes = 0, 0.0, 0.0, 0
