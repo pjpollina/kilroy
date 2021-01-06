@@ -1,21 +1,16 @@
 # Functions related to backing up queries to an SQL file
 
 require 'aws-sdk-s3'
+require 'lib/utils/time'
 
 module Backup
   extend self
 
   ROOT = ENV['backup_dir']
 
-  def header(month, day)
-    startday = day
-    startday -= 1 until([1, 8, 15, 22, 29].include?(startday))
-    if(startday != 29)
-      return "-- #{Time.new(2000, month, startday).strftime("%b %-d")}-#{startday + 6}\n"
-    else
-      headers = ["Jan 29-31", "Feb 29", "Mar 29-31", "Apr 29-30", "May 29-31", "Jun 29-30", "Jul 29-31", "Aug 29-31", "Sep 29-30", "Oct 29-31", "Nov 29-30", "Dec 29-31"]
-      return "-- #{headers[month - 1]}\n"
-    end
+  def header(month, day, year=Time.now.year)
+    time = Time.new(year, month, day)
+    time.strftime("-- %b #{[time.week_start, time.week_end].uniq.join("-")}")
   end
 
   def filepath(root=ROOT)
