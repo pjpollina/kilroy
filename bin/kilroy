@@ -21,11 +21,18 @@ runcache = []
 runspaused = false
 
 kilroy.message(in: '#cardio') do |event|
+  # Check if input is valid, and react with the "no entry sign" if it isn't
+  unless(Cardio.valid?(event.content))
+    event.message.react("\u{1F6AB}")
+    next
+  end
+  # Adds input to runcache if insertion is currently paused
   if(runspaused)
     puts "#{event.content} added to cache"
     runcache << event.content
     next
   end
+  # Inserts run into the database if neither of the above are envoked
   response, error = Cardio.insert(event.content, kilroy.mysql)
   event.message.react("\u{1F6AB}") if error
   puts "#{"Error in #cardio: " if error}#{response}"
