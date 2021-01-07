@@ -36,4 +36,22 @@ class Tweeter
       return tweet("I ran #{distance} miles in #{minutes} minutes today, top run was #{topminutes} minutes at #{topspeed}mph")
     end
   end
+
+  # Gets this week's run stats using mysql, formats them, tweets it, and returns the tweet's URL
+  def week_totals(mysql)
+    time = Time.now
+    cond = time.strftime("'%Y-%m-#{"%02d" % time.week_start}' AND '%Y-%m-#{"%02d" % time.week_end}'")
+    mysql.execute("SELECT * FROM cardio WHERE cd_date BETWEEN #{cond}") do |runs|
+      minutes, distance, topspeed, topminutes = 0, 0.0, 0.0, 0
+      runs.each do |run|
+        minutes += run[:cd_minutes].to_i
+        distance += run[:cd_distance].to_f.round(3)
+        if(run[:cd_mph].to_f.round(1) > topspeed)
+          topspeed = run[:cd_mph].to_f.round(1)
+          topminutes = run[:cd_minutes].to_i
+        end
+      end
+      puts "I ran #{distance} miles in #{minutes} minutes this week, top run was #{topminutes} minutes at #{topspeed}mph"
+    end
+  end
 end
