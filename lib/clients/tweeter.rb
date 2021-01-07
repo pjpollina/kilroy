@@ -51,7 +51,7 @@ class Tweeter
           topminutes = run[:cd_minutes].to_i
         end
       end
-      puts "I ran #{distance} miles in #{minutes} minutes this week, top run was #{topminutes} minutes at #{topspeed}mph"
+      return tweet("I ran #{distance} miles in #{minutes} minutes this week, top run was #{topminutes} minutes at #{topspeed}mph")
     end
   end
 end
