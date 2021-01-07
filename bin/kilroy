@@ -27,7 +27,7 @@ kilroy.message(in: '#cardio') do |event|
     next
   end
   response, error = Cardio.insert(event.content, kilroy.mysql)
-  event.respond(response) if error
+  event.message.react("\u{1F6AB}") if error
   puts "#{"Error in #cardio: " if error}#{response}"
 end
 
