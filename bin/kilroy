@@ -75,6 +75,9 @@ kilroy.message(in: '#functions') do |event|
     reply = "```Cached runs:\n" + runcache.join("\n") + "```"
   when 'undo'
     reply = "Removed #{runcache.pop} from cache"
+  when 'clear'
+    runcache = []
+    event.message.react("\u{1F44D}")
   end
   event.respond(reply) unless reply.empty?
 end
