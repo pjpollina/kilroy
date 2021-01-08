@@ -59,10 +59,10 @@ end
 kilroy.message(in: '#functions') do |event|
   reply = ""
   case event.content
-  when 'pause'
+  when 'cache'
     runspaused = true
     event.message.react("\u{1F44D}")
-  when 'unpause'
+  when 'uncache'
     runspaused = false
     event.message.react("\u{1F44D}")
     runcache.each do |run|
