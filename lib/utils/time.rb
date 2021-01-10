@@ -43,4 +43,9 @@ class Time
   def week_end
     (week_start < 28) ? week_start + 6 : month_days
   end
+
+  # Returns date as a string formatted for SQL
+  def sql_date
+    strftime("'%F'")
+  end
 end
