@@ -3,6 +3,11 @@
 require 'time'
 
 class Time
+  # Returns two Time objects representing the first and last days of the week
+  def week
+    [Time.new(year, month, week_start), Time.new(year, month, week_end)]
+  end
+
   # Returns the semester (half of the year) for time
   def semester
     (month < 7) ? 1 : 2
