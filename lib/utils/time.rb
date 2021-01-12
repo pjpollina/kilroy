@@ -8,6 +8,16 @@ class Time
     [Time.new(year, month, week_start), Time.new(year, month, week_end)]
   end
 
+  # Returns two Time objects representing the first and last days of last week
+  def last_week
+    if(day < 8)
+      lmonth, lyear = months_ago(1)
+      return Time.new(lyear, lmonth, 29).week
+    else
+      return Time.new(year, month, day - 7).week
+    end
+  end
+
   # Returns the semester (half of the year) for time
   def semester
     (month < 7) ? 1 : 2
