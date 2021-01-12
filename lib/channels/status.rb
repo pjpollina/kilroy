@@ -14,6 +14,7 @@ module Status
   def args(command)
     offset = command[2].to_i.abs + (command[2].eql?("last") ? 1 : 0)
     case command[1]
+      when 'week'     then return Time.now.weeks_ago(offset).collect{|w| w.sql_date}
       when 'month'    then return Time.now.months_ago(offset)
       when 'semester' then return Time.now.semesters_ago(offset)
       when 'year'     then return [Time.now.year - offset]
@@ -70,7 +71,7 @@ module Status
   def response(content, mysql)
     command, response = content.split(' '), ""
     return "Unknown command #{content}" unless command[0].match?(/\A~(totals|roundoff)/)
-    return "Missing or unrecognized arguments for command `#{command[0]}`" unless ['month', 'semester', 'year'].include?(command[1])
+    return "Missing or unrecognized arguments for command `#{command[0]}`" unless ['week', 'month', 'semester', 'year'].include?(command[1])
     mysql.execute(query(command)) do |results|
       response = run_data(results, command)
     end
