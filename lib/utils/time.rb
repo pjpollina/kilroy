@@ -18,6 +18,13 @@ class Time
     end
   end
 
+  # Returns two Time objects representing the first and last days of offset weeks ago
+  def weeks_ago(offset)
+    pweek = week
+    offset.times {pweek = pweek[0].last_week}
+    return pweek
+  end
+
   # Returns the semester (half of the year) for time
   def semester
     (month < 7) ? 1 : 2
