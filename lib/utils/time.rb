@@ -3,6 +3,11 @@
 require 'time'
 
 class Time
+  # Returns a Time object representing offset days ago
+  def days_ago(offset)
+    self - (86400 * offset)
+  end
+
   # Returns two Time objects representing the first and last days of the week
   def week
     [Time.new(year, month, week_start), Time.new(year, month, week_end)]
