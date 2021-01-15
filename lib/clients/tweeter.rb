@@ -39,8 +39,7 @@ class Tweeter
 
   # Gets this week's run stats using mysql, formats them, tweets it, and returns the tweet's URL
   def week_totals(mysql)
-    time = Time.now
-    cond = time.strftime("'%Y-%m-#{"%02d" % time.week_start}' AND '%Y-%m-#{"%02d" % time.week_end}'")
+    cond = Time.now.week.collect{|t| t.sql_date}.join(" AND ")
     mysql.execute("SELECT * FROM cardio WHERE cd_date BETWEEN #{cond}") do |runs|
       minutes, distance, topspeed, topminutes = 0, 0.0, 0.0, 0
       runs.each do |run|
