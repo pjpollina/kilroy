@@ -33,6 +33,12 @@ class Tweeter
     return tweet("I ran #{distance} miles in #{minutes} minutes this week, top run was #{topminutes} minutes at #{topspeed}mph")
   end
 
+  # Gets this month's run stats using mysql, formats them, tweets it, and returns the tweet's URL
+  def month_totals(mysql)
+    minutes, distance, topspeed, topminutes = totals(mysql, "THIS_MONTH(cd_date)")
+    return tweet("I ran #{distance} miles in #{minutes} minutes this month, top run was #{topminutes} minutes at #{topspeed}mph")
+  end
+
   private
 
   # Returns the values needed for totals tweets using mysql and condition
