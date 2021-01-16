@@ -53,4 +53,21 @@ class Tweeter
       return tweet("I ran #{distance} miles in #{minutes} minutes this week, top run was #{topminutes} minutes at #{topspeed}mph")
     end
   end
+
+  private
+
+  def totals(mysql, condition)
+    minutes, distance, topspeed, topminutes = 0, 0.0, 0.0, 0
+    mysql.execute("SELECT * FROM cardio WHERE #{condition}") do |runs|
+      runs.each do |run|
+        minutes += run[:cd_minutes].to_i
+        distance += run[:cd_distance].to_f.round(3)
+        if(run[:cd_mph].to_f.round(1) > topspeed)
+          topspeed = run[:cd_mph].to_f.round(1)
+          topminutes = run[:cd_minutes].to_i
+        end
+      end
+    end
+    return minutes, distance, topspeed, topminutes
+  end
 end
