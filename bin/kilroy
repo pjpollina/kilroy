@@ -50,6 +50,8 @@ kilroy.message(in: '#general') do |event|
     event.respond(kilroy.tweeter.day_totals(kilroy.mysql))
   when 'tweet week'
     event.respond(kilroy.tweeter.week_totals(kilroy.mysql))
+  when 'tweet month'
+    event.respond(kilroy.tweeter.month_totals(kilroy.mysql))
   when 'sync s3'
     Backup.s3_sync
     puts 's3 synced'
