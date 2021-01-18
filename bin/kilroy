@@ -73,6 +73,14 @@ kilroy.message(in: '#functions') do |event|
       puts "#{"Error in #cardio: " if error}#{response}"
     end
     runcache = []
+  when 'push'
+    event.message.react("\u{1F44D}")
+    runcache.each do |run|
+      response, error = Cardio.insert(run, kilroy.mysql)
+      reply << "#{response}\n" if error
+      puts "#{"Error in #cardio: " if error}#{response}"
+    end
+    runcache = []
   when 'show'
     reply = "```Cached runs:\n" + runcache.join("\n") + "```"
   when 'undo'
