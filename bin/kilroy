@@ -61,10 +61,10 @@ end
 kilroy.message(in: '#functions') do |event|
   reply = ""
   case event.content
-  when 'cache'
+  when 'cache'   # starts caching runs instead of auto-adding them
     runspaused = true
     event.message.react("\u{1F44D}")
-  when 'uncache'
+  when 'uncache' # commits cached runs and stops caching
     runspaused = false
     event.message.react("\u{1F44D}")
     runcache.each do |run|
@@ -73,7 +73,7 @@ kilroy.message(in: '#functions') do |event|
       puts "#{"Error in #cardio: " if error}#{response}"
     end
     runcache = []
-  when 'push'
+  when 'push'    # commits cached runs but keeps parsing
     event.message.react("\u{1F44D}")
     runcache.each do |run|
       response, error = Cardio.insert(run, kilroy.mysql)
@@ -81,11 +81,11 @@ kilroy.message(in: '#functions') do |event|
       puts "#{"Error in #cardio: " if error}#{response}"
     end
     runcache = []
-  when 'show'
+  when 'show'    # replys with currently cached runs
     reply = "```Cached runs:\n" + runcache.join("\n") + "```"
-  when 'undo'
+  when 'undo'    # removes most recently cached run
     reply = "Removed #{runcache.pop} from cache"
-  when 'clear'
+  when 'clear'   # removes all cached runs
     runcache = []
     event.message.react("\u{1F44D}")
   end
