@@ -18,7 +18,7 @@ kilroy = Kilroy.new(
 )
 
 runcache = []
-runspaused = false
+runspaused = true
 
 kilroy.message(in: '#cardio') do |event|
   # Check if input is valid, and react with the "no entry sign" if it isn't
