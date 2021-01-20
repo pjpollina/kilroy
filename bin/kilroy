@@ -17,6 +17,12 @@ kilroy = Kilroy.new(
   tweeter: Tweeter.new
 )
 
+begin
+  kilroy.mysql.execute("SELECT 2 + 2")
+rescue
+  abort("MySQL is offline!")
+end
+
 runcache = []
 runspaused = true
 
